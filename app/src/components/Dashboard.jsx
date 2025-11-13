@@ -23,26 +23,15 @@ const Dashboard = ({ activePage = "Home" }) => {
 
   // Filter widgets by current page ID
   useEffect(() => {
-    console.log("Active Page:", activePage);
-    console.log("DB Pages:", dbPages);
-    console.log("DB Widgets:", dbWidgets);
-    
     if (dbWidgets && dbLinks && dbPages) {
       const currentPageId = getCurrentPageId();
-      
-      console.log("Current Page ID:", currentPageId);
       
       if (!currentPageId) {
         setWidgets([]);
         return;
       }
 
-      const pageWidgets = dbWidgets.filter(widget => {
-        console.log(`Widget ${widget.id} pageId: ${widget.pageId}, comparing to: ${currentPageId}`);
-        return widget.pageId === currentPageId;
-      });
-      
-      console.log("Filtered Page Widgets:", pageWidgets);
+      const pageWidgets = dbWidgets.filter(widget => widget.pageId === currentPageId);
       
       const data = pageWidgets.map((widget) => ({
         ...widget,
@@ -53,8 +42,12 @@ const Dashboard = ({ activePage = "Home" }) => {
     }
   }, [dbWidgets, dbLinks, dbPages, activePage, getCurrentPageId]);
 
-  // Add Widget
-  const addWidget = async () => {
+  const getWidgetsByColumn = (columnid) => {
+    return widgets.filter(widget => (widget.columnId || 1) === columnid);
+  }
+
+  // Add Widget to specific column
+  const addWidget = async (columnId) => {
     const currentPageId = getCurrentPageId();
 
     if (!currentPageId) {
@@ -67,6 +60,7 @@ const Dashboard = ({ activePage = "Home" }) => {
       title: "New Widget",
       collapsed: false,
       pageId: currentPageId,
+      columnId: columnId || 1,
       createdAt: now(),
       updatedAt: now(),
     });
@@ -85,7 +79,7 @@ const Dashboard = ({ activePage = "Home" }) => {
 
   return (
     <div className="min-h-screen bg-white p-8">
-      {/* Debug info - remove in production */}
+      {/* Debug info - remove later*/}
       <div className="max-w-full mx-auto mb-4 text-xs text-black">
         <p>Active Page: {activePage} | Page ID: {getCurrentPageId()} | Widgets: {widgets.length}</p>
       </div>
@@ -106,22 +100,32 @@ const Dashboard = ({ activePage = "Home" }) => {
           </div>
         ) : (
           <>
-            {widgets.map((w) => (
-              <Widget 
-                key={w.id} 
-                widget={w}
-                widgets={widgets}
-                setWidgets={setWidgets}
-              />
-            ))}
+            {[1, 2, 3].map((columnId) => (
+                <div 
+                  key={columnId} 
+                  className="min-h-[500px] space-y-4"
+                >
+                  {getWidgetsByColumn(columnId).map((widget) => (
+                    <div
+                      key={widget.id}
+                    >
+                      <Widget
+                        widget={widget}
+                        widgets={widgets}
+                        setWidgets={setWidgets}
+                      />
+                    </div>
+                  ))}
 
-            <button 
-              onClick={addWidget}
-              className="border-2 border-dashed border-gray-300 rounded-xl p-4 text-gray-400 hover:text-gray-700 hover:bg-gray-50 flex flex-col items-center justify-center gap-2 min-h-[200px] transition-colors"
-            >
-              <Plus size={32}/>
-              <span className="font-medium">Add Widget</span>
-            </button>
+                  <button 
+                    onClick={() => addWidget(columnId)}
+                    className="flex items-center justify-center gap-2 bg-gray-400 p-1 px-2 rounded rounded-md hover:bg-[#1c1c1c] hover:text-white transition-colors"
+                  >
+                    <Plus size={20}/>
+                    <span className="font-medium">Add Widget</span>
+                  </button>
+                </div>
+            ))}
           </>
         )}
       </div>
