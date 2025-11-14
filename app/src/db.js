@@ -8,8 +8,8 @@ export const db = new Dexie("bookmarkdb");
  */
 db.version(1).stores({
   pages: "++id, uuid, title, createdAt, updatedAt",
-  widgets: "++id, uuid, pageId, columnId, title, collapsed, createdAt, updatedAt",
-  links: "++id, uuid, widgetId, pageId, name, url, createdAt, updatedAt"
+  widgets: "++id, uuid, pageId, columnId, order, title, collapsed, createdAt, updatedAt",
+  links: "++id, uuid, widgetId, name, url, createdAt, updatedAt"
 });
 
 /**
