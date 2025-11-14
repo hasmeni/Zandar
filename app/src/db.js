@@ -9,7 +9,7 @@ export const db = new Dexie("bookmarkdb");
 db.version(1).stores({
   pages: "++id, uuid, title, createdAt, updatedAt",
   widgets: "++id, uuid, pageId, columnId, order, title, collapsed, createdAt, updatedAt",
-  links: "++id, uuid, widgetId, name, url, createdAt, updatedAt"
+  links: "++id, uuid, widgetId, order, name, url, createdAt, updatedAt"
 });
 
 /**

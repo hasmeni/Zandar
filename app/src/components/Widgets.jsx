@@ -6,9 +6,11 @@ import { v4 as uuidv4 } from "uuid";
 import { db } from "../db";
 
 const Widget = ({ widget, widgets, setWidgets }) => {
-  const [dragged, setDragged] = useState(null);
   const [showAddLink, setShowAddLink] = useState(false);
   const [editingWidget, setEditingWidget] = useState(false);
+  
+  const [draggedLink, setDraggedLink] = useState(null);
+  const [dragOverLink, setDragOverLink] = useState(null);
 
   const now = () => new Date().toISOString();
 
@@ -45,12 +47,18 @@ const Widget = ({ widget, widgets, setWidgets }) => {
     let url = newLink.url.trim();
     if (!url.startsWith("http")) url = `https://${url}`;
 
+    // Get max order in widget
+    const maxOrder = widget.links.length > 0 
+      ? Math.max(...widget.links.map(l => l.order || 0))
+      : -1;
+
     try {
       await db.links.add({
         uuid: uuidv4(),
         name: newLink.name,
         url,
         widgetId,
+        order: maxOrder + 1,
         createdAt: now(),
         updatedAt: now(),
       });
@@ -90,18 +98,95 @@ const Widget = ({ widget, widgets, setWidgets }) => {
     }
   };
 
-  // Drag logic
-  const onDragStart = (link, widgetId) =>
-    setDragged({ link, from: widgetId });
+  // LINK DRAG & DROP HANDLERS
 
-  const onDrop = async (targetWidgetId) => {
-    if (!dragged || dragged.from === targetWidgetId) return;
-    await db.links.update(dragged.link.id, {
-      widgetId: targetWidgetId,
-      updatedAt: now(),
-    });
-    setDragged(null);
+  const handleLinkDragStart = (e, link) => {
+    setDraggedLink(link);
+    e.dataTransfer.effectAllowed = "move";
+    e.dataTransfer.setData("linkId", link.id.toString());
   };
+
+  const handleLinkDragEnd = () => {
+    setDraggedLink(null);
+    setDragOverLink(null);
+  };
+
+  const handleLinkDragOver = (e, targetLink) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (!draggedLink || draggedLink.id === targetLink.id) return;
+    
+    setDragOverLink(targetLink.id);
+  };
+
+  const handleLinkDrop = async (e, targetLink) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (!draggedLink || draggedLink.id === targetLink.id) return;
+
+    // Check if moving to same widget (reorder) or different widget (move)
+    if (draggedLink.widgetId === targetLink.widgetId) {
+      // Reorder within same widget
+      const widgetLinks = widget.links.sort((a, b) => (a.order || 0) - (b.order || 0));
+      const draggedIndex = widgetLinks.findIndex(l => l.id === draggedLink.id);
+      const targetIndex = widgetLinks.findIndex(l => l.id === targetLink.id);
+      
+      if (draggedIndex !== -1 && targetIndex !== -1) {
+        const reordered = [...widgetLinks];
+        const [removed] = reordered.splice(draggedIndex, 1);
+        reordered.splice(targetIndex, 0, removed);
+        
+        // Update order in database
+        const updates = reordered.map((link, index) => 
+          db.links.update(link.id, { order: index, updatedAt: now() })
+        );
+        
+        await Promise.all(updates);
+      }
+    } else {
+      // Move to different widget
+      const targetWidgetLinks = widgets
+        .find(w => w.id === targetLink.widgetId)?.links || [];
+      
+      const targetIndex = targetWidgetLinks.findIndex(l => l.id === targetLink.id);
+      
+      await db.links.update(draggedLink.id, {
+        widgetId: targetLink.widgetId,
+        order: targetIndex,
+        updatedAt: now(),
+      });
+    }
+    
+    setDraggedLink(null);
+    setDragOverLink(null);
+  };
+
+  // Drop on widget (when not dropping on a specific link)
+  const handleWidgetDrop = async (e) => {
+    e.preventDefault();
+    
+    if (!draggedLink || dragOverLink) return; // Already handled by link drop
+    
+    // Drop at end of widget
+    if (draggedLink.widgetId !== widget.id) {
+      const maxOrder = widget.links.length > 0 
+        ? Math.max(...widget.links.map(l => l.order || 0))
+        : -1;
+      
+      await db.links.update(draggedLink.id, {
+        widgetId: widget.id,
+        order: maxOrder + 1,
+        updatedAt: now(),
+      });
+    }
+    
+    setDraggedLink(null);
+  };
+
+  // Sort links by order
+  const sortedLinks = [...widget.links].sort((a, b) => (a.order || 0) - (b.order || 0));
 
   return (
     <>
@@ -137,7 +222,7 @@ const Widget = ({ widget, widgets, setWidgets }) => {
       <div 
         className="border-2 border-dashed border-gray-300 rounded-xl p-4 bg-white hover:border-gray-400 transition-colors group"
         onDragOver={(e) => e.preventDefault()}
-        onDrop={() => onDrop(widget.id)}
+        onDrop={handleWidgetDrop}
       >
         {/* Header */}
         <div className="flex justify-between mb-3">
@@ -201,35 +286,48 @@ const Widget = ({ widget, widgets, setWidgets }) => {
         {/* Widget Content */}
         {!widget.collapsed && (
           <div className="space-y-1">
-            {widget.links.map((l) => (
-              <div 
-                key={l.id}
-                draggable
-                onDragStart={() => onDragStart(l, widget.id)}
-                className="group/link flex items-center gap-2 px-2 rounded hover:bg-gray-50 cursor-move"
-              >
-                <Grip size={14} className="text-gray-400 opacity-0 group-hover/link:opacity-100"/>
-                <img
-                  src={`https://www.google.com/s2/favicons?domain=${l.url}&sz=32`}
-                  className="w-4 h-4"
-                  onError={(e) => (e.target.style.display = "none")}
-                />
-                <a 
-                  href={l.url} 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
-                  className="flex-1 text-sm truncate hover:text-blue-600"
+            {sortedLinks.map((l) => {
+              const isDragging = draggedLink?.id === l.id;
+              const isDropTarget = dragOverLink === l.id;
+
+              return (
+                <div 
+                  key={l.id}
+                  draggable
+                  onDragStart={(e) => handleLinkDragStart(e, l)}
+                  onDragEnd={handleLinkDragEnd}
+                  onDragOver={(e) => handleLinkDragOver(e, l)}
+                  onDrop={(e) => handleLinkDrop(e, l)}
+                  className={`
+                    group/link flex items-center gap-2 px-2 py-1.5 rounded 
+                    hover:bg-gray-50 cursor-move transition-all duration-150
+                    ${isDragging ? 'opacity-30 scale-95' : 'opacity-100 scale-100'}
+                    ${isDropTarget ? 'bg-cyan-50 border-l-2 border-cyan-500' : ''}
+                  `}
                 >
-                  {l.name}
-                </a>
-                <button 
-                  onClick={() => deleteLink(l.id)}
-                  className="opacity-0 group-hover/link:opacity-100 hover:bg-gray-200 p-1 rounded"
-                >
-                  <Trash2 size={14}/>
-                </button>
-              </div>
-            ))}
+                  <Grip size={14} className="text-gray-400 opacity-0 group-hover/link:opacity-100"/>
+                  <img
+                    src={`https://www.google.com/s2/favicons?domain=${l.url}&sz=32`}
+                    className="w-4 h-4"
+                    onError={(e) => (e.target.style.display = "none")}
+                  />
+                  <a 
+                    href={l.url} 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="flex-1 text-sm truncate hover:text-blue-600"
+                  >
+                    {l.name}
+                  </a>
+                  <button 
+                    onClick={() => deleteLink(l.id)}
+                    className="opacity-0 group-hover/link:opacity-100 hover:bg-gray-200 p-1 rounded"
+                  >
+                    <Trash2 size={14}/>
+                  </button>
+                </div>
+              );
+            })}
 
             {showAddLink ? (
               <div className="bg-gray-50 p-2 rounded space-y-2 mt-2">
