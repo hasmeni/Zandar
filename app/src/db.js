@@ -18,8 +18,8 @@ db.version(1).stores({
  */
 
 db.on("populate", async () => {
-  const now = new Date().toISOString();
 
+  const now = new Date().toISOString();
 
   // Create default page
   const pageId = await db.pages.add({
@@ -30,43 +30,124 @@ db.on("populate", async () => {
   });
 
   // Default widget
-  const widgetId = await db.widgets.add({
-    uuid: uuidv4(),
-    pageId,
-    title: "My Links",
-    collapsed: false,
-    createdAt: now,
-    updatedAt: now
-  });
-
-  // Default links
-  await db.links.bulkAdd([
+  
+  await db.widgets.bulkAdd([
     {
       uuid: uuidv4(),
-      widgetId,
-      name: "ChatGPT",
-      url: "https://chatgpt.com",
+      id: 1,
+      title: "Developer Essentials",
+      pageId,
+      columnId: 1,
+      order: 0,
+      collapsed: false,
       createdAt: now,
       updatedAt: now
     },
     {
       uuid: uuidv4(),
-      widgetId,
-      name: "Google",
-      url: "https://google.com",
+      id: 2,
+      title: "Socials",
+      pageId,
+      columnId: 2,
+      order: 0,
+      collapsed: false,
+      createdAt: now,
+      updatedAt: now
+    },
+    {
+      uuid: uuidv4(),
+      id: 3,
+      title: "VibeCoding",
+      pageId,
+      columnId: 3,
+      order: 0,
+      collapsed: false,
       createdAt: now,
       updatedAt: now
     }
+  ])
+
+  // Default links
+  await db.links.bulkAdd([
+    {
+      uuid: uuidv4(),
+      id: 1,
+      name: "Github",
+      url: "https://github.com",
+      widgetId: 1,
+      order: 0,
+      createdAt: now,
+      updatedAt: now
+    },
+    {
+      uuid: uuidv4(),
+      id: 2,
+      name: "MDN Web Docs",
+      url: "https://developer.mozilla.org",
+      widgetId: 1,
+      order: 1,
+      createdAt: now,
+      updatedAt: now
+    },
+    {
+      uuid: uuidv4(),
+      id: 3,
+      name: "X",
+      url: "https://x.com",
+      widgetId: 2,
+      order: 0,
+      createdAt: now,
+      updatedAt: now
+    },
+    {
+      uuid: uuidv4(),
+      id: 4,
+      name: "Reddit",
+      url: "https://www.reddit.com/",
+      widgetId: 2,
+      order: 1,
+      createdAt: now,
+      updatedAt: now
+    },
+    {
+      uuid: uuidv4(),
+      id: 5,
+      name: "Youtube",
+      url: "https://www.youtube.com/",
+      widgetId: 2,
+      order: 2,
+      createdAt: now,
+      updatedAt: now
+    },
+    {
+      uuid: uuidv4(),
+      id: 6,
+      name: "ChatGPT",
+      url: "https://chat.openai.com",
+      widgetId: 3,
+      order: 0,
+      createdAt: now,
+      updatedAt: now  
+    },
+    {
+      uuid: uuidv4(),
+      id: 7,
+      name: "Claude",
+      url: "https://claude.ai",
+      widgetId: 3,
+      order: 1,
+      createdAt: now,
+      updatedAt: now  
+    },
+    {
+      uuid: uuidv4(),
+      id: 8,
+      name: "Lovable",
+      url: "https://lovable.dev/",
+      widgetId: 3,
+      order: 2,
+      createdAt: now,
+      updatedAt: now  
+    },
   ]);
-
-  // Widget add
-  // await db.widgets.bulkAdd(
-  //   [
-  //     {
-  //       uuid: uuidv4(),
-  //       pageId:
-
-  //     }
-  //   ]
-  // )
 });

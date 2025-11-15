@@ -317,6 +317,18 @@ export default function NavBar({ activeTab, setActiveTab }) {
 
             {/* Right side - Search, Edit, Account */}
             <div className="flex items-center space-x-4 mx-3">
+              <button 
+                onClick={async () => {
+                  if (confirm('Delete ALL data and reset database?')) {
+                    await db.delete();
+                    window.location.reload();
+                  }
+                }}
+                className="bg-red-500 text-white px-3 py-2 rounded text-xs"
+              >
+                [ Reset DB ]
+              </button>
+
               <button
                 onClick={() => setSearchOpen(true)}
                 className="hover:bg-gray-100 p-2 rounded-md transition-colors"
