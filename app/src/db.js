@@ -29,6 +29,119 @@ db.on("populate", async () => {
     updatedAt: now
   });
 
+  // Testing multiple pages 
+  // // Create default page
+  // const pageId = await db.pages.bulkAdd([
+  //   {
+  //     uuid: "c95f9bcf-2a55-4784-8a9b-637cbe8efba0",
+  //     title: "Home",
+  //     createdAt: now,
+  //     updatedAt: now
+  //   },
+  //   {
+  //     uuid: uuidv4(),
+  //     title: "Home",
+  //     createdAt: now,
+  //     updatedAt: now
+  //   },
+  //   {
+  //     uuid: uuidv4(),
+  //     title: "Home",
+  //     createdAt: now,
+  //     updatedAt: now
+  //   },
+  //   {
+  //     uuid: uuidv4(),
+  //     title: "Home",
+  //     createdAt: now,
+  //     updatedAt: now
+  //   },
+  //   {
+  //     uuid: uuidv4(),
+  //     title: "Home",
+  //     createdAt: now,
+  //     updatedAt: now
+  //   },
+  //   {
+  //     uuid: uuidv4(),
+  //     title: "Home",
+  //     createdAt: now,
+  //     updatedAt: now
+  //   },
+  //   {
+  //     uuid: uuidv4(),
+  //     title: "Home",
+  //     createdAt: now,
+  //     updatedAt: now
+  //   },
+  //   {
+  //     uuid: uuidv4(),
+  //     title: "Home",
+  //     createdAt: now,
+  //     updatedAt: now
+  //   },
+  //   {
+  //     uuid: uuidv4(),
+  //     title: "Home",
+  //     createdAt: now,
+  //     updatedAt: now
+  //   },  
+  //   {
+  //     uuid: uuidv4(),
+  //     title: "Home",
+  //     createdAt: now,
+  //     updatedAt: now
+  //   },
+  //   {
+  //     uuid: uuidv4(),
+  //     title: "Home",
+  //     createdAt: now,
+  //     updatedAt: now
+  //   },
+  //   {
+  //     uuid: uuidv4(),
+  //     title: "Home",
+  //     createdAt: now,
+  //     updatedAt: now
+  //   },
+  //   {
+  //     uuid: uuidv4(),
+  //     title: "Home",
+  //     createdAt: now,
+  //     updatedAt: now
+  //   },
+  //   {
+  //     uuid: uuidv4(),
+  //     title: "Home",
+  //     createdAt: now,
+  //     updatedAt: now
+  //   },
+  //   {
+  //     uuid: uuidv4(),
+  //     title: "Home",
+  //     createdAt: now,
+  //     updatedAt: now
+  //   },
+  //   {
+  //     uuid: uuidv4(),
+  //     title: "Home",
+  //     createdAt: now,
+  //     updatedAt: now
+  //   },
+  //   {
+  //     uuid: uuidv4(),
+  //     title: "Home",
+  //     createdAt: now,
+  //     updatedAt: now
+  //   },
+  //   {
+  //     uuid: uuidv4(),
+  //     title: "Home",
+  //     createdAt: now,
+  //     updatedAt: now
+  //   }
+  // ]);
+
   // Default widget
   
   await db.widgets.bulkAdd([

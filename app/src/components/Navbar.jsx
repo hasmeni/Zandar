@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import {
-  ChevronDown,
   X,
   Pencil,
   Plus,
   Search,
   Edit3,
   User,
+  Menu,
 } from "lucide-react";
 import { v4 as uuidv4 } from "uuid";
 import { db } from "../db";
@@ -151,7 +151,7 @@ export default function NavBar({ activeTab, setActiveTab }) {
                 className="flex items-center gap-1 transition-colors mx-1 px-2 py-2 rounded-xl shadow-[0_4px_10px_rgba(0,0,0,0.4)] bg-[#2A2A2C]"
                 aria-label="Pages menu"
               >
-                <ChevronDown size={18} />
+                <Menu size={18} />
               </button>
 
               {/* Dropdown Menu */}
@@ -172,10 +172,14 @@ export default function NavBar({ activeTab, setActiveTab }) {
                   <div className="relative px-4 py-3">
                     <div className="absolute top-0 left-0 right-0 h-px"></div>
                     
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium text-neutral-200 font-semibold tracking-wider ml-2">
-                        My Pages
-                      </span>
+                    <div className="flex items-center justify-between"> 
+                      <div className="flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-layers-icon lucide-layers"><path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z"/><path d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12"/><path d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17"/></svg>
+
+                        <span className="text-sm font-medium text-neutral-200 font-semibold tracking-wider ml-2">
+                          My Pages
+                        </span>
+                      </div>
                       <button
                         onClick={() => {
                           setDropdownOpen(false);
@@ -241,7 +245,7 @@ export default function NavBar({ activeTab, setActiveTab }) {
                   {/* Footer */}
                   <div className="relative px-4 py-2.5">
                     <div className="absolute bottom-0 left-0 right-0 h-px bg-[#161616]"></div>
-                    <div className="text-center text-xs text-neutral-600">
+                    <div className="text-center text-xs text-neutral-600 select-none">
                       {pages.length} {pages.length === 1 ? 'page' : 'pages'}
                     </div>
                   </div>
