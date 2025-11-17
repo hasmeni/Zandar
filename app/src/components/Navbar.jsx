@@ -230,7 +230,7 @@ export default function NavBar({ activeTab, setActiveTab }) {
                     className={`
                       px-5 py-2 rounded-xl cursor-move transition-all duration-200
                       ${activeTab === page.title 
-                        ? "bg-white text-base text-black font-bold" 
+                        ? "bg-white text-sm text-black font-bold" 
                         : "bg-[#2A2A2C] text-sm text-white hover:text-white shadow-[0_4px_10px_rgba(0,0,0,0.4)]"
                       }
                       ${isDragging ? 'opacity-30 scale-95' : 'opacity-100 scale-100'}
@@ -259,7 +259,7 @@ export default function NavBar({ activeTab, setActiveTab }) {
               </button>
             </div>
           </div>
-
+            
           {/* Right side - Icons */}
           <div className="flex items-center gap-4 px-1">
             <div className="flex items-center gap-2">

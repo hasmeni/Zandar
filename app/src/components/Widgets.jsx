@@ -276,7 +276,7 @@ const Widget = ({ widget, widgets, setWidgets }) => {
                 </h3>
                 <ChevronDown 
                   size={18} 
-                  className={`opacity-0 transition-transform ${widget.collapsed ? '-rotate-90 text-gray-400 opacity-100' : '+rotate-90 text-gray-400 opacity-100'}`}
+                  className={`transition-transform ${widget.collapsed ? '-rotate-90 text-gray-400' : '+rotate-90 text-gray-400'} ${isHovered ? 'opacity-100' : 'opacity-0'} `}
                 />
               </button>
             )}
