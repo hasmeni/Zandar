@@ -262,7 +262,7 @@ const Dashboard = ({ activePage = "c9f9bcf-2a55-4784-8a9b-637cbe8efba0" }) => {
 
                   <button 
                     onClick={() => addWidget(columnId)}
-                    className="flex items-center text-[#020202] justify-center gap-2 px-3 rounded-xl transition-all duration-150 group-hover:text-[#767676]/75 hover:!text-white"
+                    className="flex items-center text-[#020202] justify-center select-none gap-2 px-3 rounded-xl transition-all duration-150 group-hover:text-[#767676]/75 hover:!text-white"
                   >
                     <Plus size={20} />
                     <span className="text-sm">Add widget</span>
