@@ -322,8 +322,6 @@ export default function NavBar({ activeTab, setActiveTab }) {
                 Reset
               </button>
             </div>
-            <BackupManager />
-
             <div className="flex items-center gap-2">
               <button
                 className="text-gray-400 hover:text-white transition-colors p-1.5 rounded hover:bg-gray-800"
