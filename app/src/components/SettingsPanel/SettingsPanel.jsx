@@ -6,6 +6,7 @@ import {
  } from "lucide-react";
 import SearchBar from "../SearchBar";
 import BackupManager from "../BackupManager";
+import { db } from "../../services/db/schema.js";
 
 const PANEL_WIDTH = "400px";
 
@@ -77,6 +78,23 @@ const SettingsPanel = ({ isOpen, onClose }) => {
         <div className="p-4 space-y-6">
           <BackupManager />
 
+          {/* Horizontal divider Line */}
+          <div className="h-0.5 w-full rounded-full bg-[#2A2A2C]"></div>
+
+          <div className="flex justify-center">
+            <button 
+              aria-label="Reset"
+              className="w-full font-instrument px-3 py-3 bg-red-600 rounded hover:bg-red-700 transition-colors"
+              onClick={ async () => {
+                if(confirm('Delete all data and reset? :)')) {
+                    await db.delete();
+                    window.location.reload();
+                  }
+                }}
+            >
+              Reset
+            </button>
+          </div>
         </div>
       </div>
     </>

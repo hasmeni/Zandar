@@ -364,23 +364,6 @@ export default function NavBar({ activeTab, setActiveTab }) {
             
           {/* Right side - Icons */}
           <div className="flex items-center gap-4 px-1">
-            
-            {/* Remove in Production :) */}
-            <div>
-              <button 
-                className="px-3 py-1 bg-red-600 rounded"
-                
-                onClick={ async () => {
-                  if(confirm('Delete all data and reset? :)')) {
-                    await db.delete();
-                    window.location.reload();
-                  }
-                }}
-              >
-                Reset
-              </button>
-            </div>
-
             <div className="flex items-center gap-2">
               <button
                 className="text-gray-400 hover:text-white transition-colors p-1.5 rounded hover:bg-gray-800"
