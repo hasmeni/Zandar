@@ -4,12 +4,12 @@ import {
   Search
 
  } from "lucide-react";
-import DisplaySection from "./DisplaySection";
-import TypographySection from "./TypographySection";
-import ThemeSection from "./ThemeSection";
-import DataSection from "./DataSection";
-import BackupManager from "../BackupManager";
-import SearchBar from "../SearchBar";
+// import DisplaySection from "./DisplaySection";
+// import TypographySection from "./TypographySection";
+// import ThemeSection from "./ThemeSection";
+// import DataSection from "./DataSection";
+// import BackupManager from "../BackupManager";
+// import SearchBar from "../SearchBar";
 
 const PANEL_WIDTH = "450px";
 
