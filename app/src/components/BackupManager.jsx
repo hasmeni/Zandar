@@ -75,8 +75,7 @@ const BackupManager = () => {
   }, [stats]);
 
   return (
-    <div className="flex justify-center relative z-50 mt-72">
-      <div className="bg-[#18181b] rounded-2xl p-6 shadow-[0_4px_15px_rgba(0,0,0,0.4)]">
+      <div className="bg-[#232323] rounded-lg p-6">
       <div className="flex items-center gap-3 mb-6">
         <Database size={24} className="text-gray-400" />
         <h2 className="text-xl font-semibold text-white">Backup & Restore</h2>
@@ -162,7 +161,6 @@ const BackupManager = () => {
           💡 <strong>Tip:</strong> Export creates a backup file. Import replaces all current data with backup data.
         </p>
       </div>
-    </div>
     </div>
   );
 };

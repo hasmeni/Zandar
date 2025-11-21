@@ -5,13 +5,14 @@ import {
   Plus,
   Search,
   Edit3,
-  User,
   Menu,
+  Settings2,
 } from "lucide-react";
 import { v4 as uuidv4 } from "uuid";
 import { db } from "../services/db/schema.js";
 import { useLiveQuery } from 'dexie-react-hooks';
 import BackupManager from "./BackupManager.jsx";
+import SettingsPanel from "./SettingsPanel/SettingsPanel";
 
 export default function NavBar({ activeTab, setActiveTab }) {
   const dbPages = useLiveQuery(() => db.pages.toArray(), []);
@@ -24,6 +25,9 @@ export default function NavBar({ activeTab, setActiveTab }) {
   const [newPageDialog, setNewPageDialog] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState(null);
   const [newPage, setNewPage] = useState({ title: "" });
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [editingPageTitleById, setEditingPageTitleById] = useState(null);
+
   // const [transparentNav, setTransparentNav] = useState(false);
 
   const now = () => new Date().toISOString();
@@ -37,6 +41,20 @@ export default function NavBar({ activeTab, setActiveTab }) {
       }
     }
   }, [dbPages, activeTab, setActiveTab]);
+
+  const updatePageTitle = async (pageId, Title) => {
+    const trimmedTitle = Title.trim();
+    const finalTitle = trimmedTitle === "" ? "New Page" : trimmedTitle;
+
+    try {
+      await db.pages.update(pageId, {
+        title: finalTitle,
+        updatedAt: now()
+      })
+    } catch (error) {
+      alert("Error: Failed to update page title");
+    }
+  }
 
   const handleDeletePage = async (pageToDelete) => {
     try {
@@ -205,41 +223,81 @@ export default function NavBar({ activeTab, setActiveTab }) {
                         }}
                         className={`
                           w-full group/item relative flex items-center justify-between 
-                          py-2 mb-1 rounded-xl transition-all duration-200
+                          py-2 px-3 mb-1 rounded-lg transition-all duration-200 
                           ${activeTab === page.uuid 
-                            ? 'bg-gradient-to-b from-white/[0.12] to-white/[0.08] px-2 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.15),inset_0_-1px_0_rgba(0,0,0,0.2),0_4px_16px_rgba(0,0,0,0.4)]' 
-                            : 'text-white/50 hover:bg-white/[0.03] px-2 hover:text-white hover:shadow-[0_2px_8px_rgba(0,0,0,0.2)]'
+                            ? 'bg-gradient-to-b from-white/[0.12] to-white/[0.08] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.15),inset_0_-1px_0_rgba(0,0,0,0.2),0_4px_16px_rgba(0,0,0,0.4)]' 
+                            : 'text-white/50 hover:bg-white/[0.03] hover:text-white hover:shadow-[0_2px_8px_rgba(0,0,0,0.2)]'
                           }
                         `}
                       >
-                        {/* Active indicator - subtle left border */}
-                        {activeTab === page.uuid && (
-                          <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 bg-gradient-to-b from-white/40 via-white/60 to-white/40 rounded-r-full shadow-[0_0_14px_rgba(255,255,255,0.3)]"></div>
+                        {editingPageTitleById === page.id ? (
+                          <input
+                            value={page.title}
+                            onChange={(e) =>
+                              setPages(prev =>
+                                prev.map(p =>
+                                  p.id === page.id ? { ...p, title: e.target.value } : p
+                                )
+                              )
+                            }
+                            onBlur={() => {
+                              const currentPage = pages.find(p => p.id === page.id);
+                              if (currentPage) {
+                                updatePageTitle(page.id, currentPage.title);
+                              }
+                              setEditingPageTitleById(null);
+                            }}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') {
+                                const currentPage = pages.find(p => p.id === page.id);
+                                if (currentPage) {
+                                  updatePageTitle(page.id, currentPage.title);
+                                }
+                                setEditingPageTitleById(null);
+                              }
+                              if (e.key === 'Escape') {
+                                setEditingPageTitleById(null);
+                              }
+                            }}
+                            onClick={(e) => e.stopPropagation()}
+                            autoFocus
+                            className="flex-1 bg-[#27272a] text-white text-sm font-medium px-3 py-1.5 rounded-lg focus:outline-none focus:ring-1 focus:ring-gray-600"
+                          />
+                        ) : (
+                          <span className={`
+                            text-sm font-medium flex-1 text-left
+                            ${activeTab === page.uuid ? 'text-white' : 'text-neutral-500'}
+                          `}>
+                            {page.title}
+                          </span>
                         )}
 
-                        <span className={`text-sm 
-                          ${activeTab === page.uuid ? 'text-neutral-300' : 'text-neutral-500' } font-medium ml-3`}
-                        >
-                          {page.title}
-                        </span>
+                        {/* Action Buttons - INSIDE button element */}
+                        {!editingPageTitleById && (
+                          <div className="flex items-center gap-1 opacity-0 group-hover/item:opacity-100 transition-opacity">
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setEditingPageTitleById(page.id);
+                              }}
+                              className="text-neutral-500 hover:text-white hover:bg-white/[0.08] p-1.5 rounded-lg transition-all"
+                              aria-label="Edit page title"
+                            >
+                              <Pencil size={14} />
+                            </button>
 
-                        {/* Delete button */}
-                        <div className="absolute right-2 top-1/2 -translate-y-1/2">
-
-                          <button className="opacity-0 group-hover/item:opacity-100 text-neutral-500 hover:text-white hover:bg-white/[0.08] ml-3 mr-2 p-1.5 rounded-lg transition-all">
-                            <Pencil size={14} />
-                          </button>
-
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setDeleteConfirm(page);
-                            }}
-                            className="opacity-0 group-hover/item:opacity-100 text-neutral-500 hover:text-red-400 hover:bg-white/[0.08] mr-1 p-1.5 rounded-lg transition-all"
-                          >
-                            <X size={14} />
-                          </button>
-                        </div>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setDeleteConfirm(page);
+                              }}
+                              className="text-neutral-500 hover:text-red-400 hover:bg-white/[0.08] p-1.5 rounded-lg transition-all"
+                              aria-label="Delete page"
+                            >
+                              <X size={14} />
+                            </button>
+                          </div>
+                        )}
                       </button>
                     ))}
                   </div>
@@ -322,6 +380,7 @@ export default function NavBar({ activeTab, setActiveTab }) {
                 Reset
               </button>
             </div>
+
             <div className="flex items-center gap-2">
               <button
                 className="text-gray-400 hover:text-white transition-colors p-1.5 rounded hover:bg-gray-800"
@@ -340,14 +399,19 @@ export default function NavBar({ activeTab, setActiveTab }) {
             </div>
 
             {/* Divider */}
-            <div className="h-4 w-[2px] rounded-full bg-[#2A2A2C]"></div>
+            <div className="h-4 w-[2px] rounded-full bg-[#2A2A2C]"></div>            
 
             <button
+              onClick={() => setSettingsOpen(true)}
               className="text-gray-400 hover:text-white transition-colors p-1.5 rounded hover:bg-gray-800"
-              aria-label="Account"
             >
-              <User size={18} />
+              <Settings2 size={18} />
             </button>
+            <SettingsPanel 
+              isOpen={settingsOpen} 
+              onClose={() => setSettingsOpen(false)} 
+            />
+
           </div>
         </div>
       </nav>

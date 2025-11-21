@@ -12,7 +12,7 @@ import { db } from "../services/db/schema.js";
 
 const Widget = ({ widget, widgets, setWidgets }) => {
   const [showAddLink, setShowAddLink] = useState(false);
-  const [editingWidget, setEditingWidget] = useState(false);
+  const [editingWidgetTitle, setEditingWidgetTitle] = useState(false);
   const [isHovered, setIsHovered] = useState(false); // ADD THIS
   const [collapsed, setCollapsed] = useState(widget.collapsed);
   
@@ -233,7 +233,7 @@ const Widget = ({ widget, widgets, setWidgets }) => {
         {/* Header */}
         <div className="flex justify-between items-center mb-4">
           <div className="flex gap-2 items-center flex-1">
-            {editingWidget ? (
+            {editingWidgetTitle ? (
               <input
                 value={widget.title}
                 onChange={(e) =>
@@ -247,7 +247,7 @@ const Widget = ({ widget, widgets, setWidgets }) => {
                   if (w) {
                     updateWidgetTitle(widget.id, w.title);
                   }
-                  setEditingWidget(false);
+                  setEditingWidgetTitle(false);
                 }}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
@@ -255,10 +255,10 @@ const Widget = ({ widget, widgets, setWidgets }) => {
                     if (w) {
                       updateWidgetTitle(widget.id, w.title);
                     }
-                    setEditingWidget(false);
+                    setEditingWidgetTitle(false);
                   }
                   if (e.key === 'Escape') {
-                    setEditingWidget(false);
+                    setEditingWidgetTitle(false);
                   }
                 }}
                 autoFocus
@@ -271,7 +271,7 @@ const Widget = ({ widget, widgets, setWidgets }) => {
               >
                 <h3 
                   className="text-base font-medium text-white group-hover/title:text-gray-200"
-                  onDoubleClick={() => setEditingWidget(true)}
+                  onDoubleClick={() => setEditingWidgetTitle(true)}
                 >
                   {widget.title}
                 </h3>
@@ -286,7 +286,7 @@ const Widget = ({ widget, widgets, setWidgets }) => {
           {/* Widget Actions - USE isHovered STATE */}
           <div className={`flex gap-1 transition-opacity duration-200 ${isHovered ? 'opacity-100' : 'opacity-0'}`}>
             <button 
-              onClick={() => setEditingWidget(true)}
+              onClick={() => setEditingWidgetTitle(true)}
               className="text-gray-400 hover:text-white hover:bg-[#27272a] p-1.5 rounded transition-colors"
             >
               <Edit2 size={14}/>
