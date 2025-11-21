@@ -4,12 +4,8 @@ import {
   Search
 
  } from "lucide-react";
-// import DisplaySection from "./DisplaySection";
-// import TypographySection from "./TypographySection";
-// import ThemeSection from "./ThemeSection";
-// import DataSection from "./DataSection";
-// import BackupManager from "../BackupManager";
-// import SearchBar from "../SearchBar";
+import SearchBar from "../SearchBar";
+import BackupManager from "../BackupManager";
 
 const PANEL_WIDTH = "450px";
 
@@ -79,13 +75,6 @@ const SettingsPanel = ({ isOpen, onClose }) => {
 
         {/* Content */}
         <div className="p-4 space-y-6">
-          {/* <DisplaySection /> */}
-          {/* <TypographySection /> */}
-          {/* <ThemeSection /> */}
-          {/* <DataSection /> */}
-          
-          <div className="bg-neutral-700 w-[415px] h-[2px]"></div>
-
           <BackupManager />
 
         </div>
