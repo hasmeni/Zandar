@@ -178,6 +178,8 @@ const Dashboard = ({ activePage = "c9f9bcf-2a55-4784-8a9b-637cbe8efba0" }) => {
   }
 
   return (
+    // this for my local version
+    // <div className='bg-[url("/assets/redCloud.jpg")] bg-cover bg-center min-h-screen bg-[#020202] px-8 py-6'>
     <div className="min-h-screen bg-[#020202] px-8 py-6">
       <div className="grid grid-cols-3 gap-4 max-w-full mx-auto">
         {widgets.length === 0 ? (

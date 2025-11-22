@@ -11,7 +11,7 @@ import {
 import { v4 as uuidv4 } from "uuid";
 import { db } from "../services/db/schema.js";
 import { useLiveQuery } from 'dexie-react-hooks';
-import BackupManager from "./BackupManager.jsx";
+import BackupManager from "./SettingsPanel/BackupManager.jsx";
 import SettingsPanel from "./SettingsPanel/SettingsPanel";
 
 export default function NavBar({ activeTab, setActiveTab }) {
@@ -196,7 +196,7 @@ export default function NavBar({ activeTab, setActiveTab }) {
                       <div className="flex items-center justify-center">
                         <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-layers-icon lucide-layers"><path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z"/><path d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12"/><path d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17"/></svg>
 
-                        <span className="text-sm font-medium text-neutral-200 font-semibold tracking-wider ml-2">
+                        <span className="text-sm font-md text-neutral-200 font-semibold tracking-wider ml-2">
                           My Pages
                         </span>
                       </div>

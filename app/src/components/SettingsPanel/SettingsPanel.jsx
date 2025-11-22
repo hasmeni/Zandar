@@ -5,13 +5,12 @@ import {
 
  } from "lucide-react";
 import SearchBar from "../SearchBar";
-import BackupManager from "../BackupManager";
+import BackupManager from "./BackupManager.jsx";
 import { db } from "../../services/db/schema.js";
 
-const PANEL_WIDTH = "400px";
+const PANEL_WIDTH = "360px";
 
 const SettingsPanel = ({ isOpen, onClose }) => {
-  
   // const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {

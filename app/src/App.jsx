@@ -8,9 +8,11 @@ function App() {
 
   return (
     <>
-      <Navbar activeTab={activePage} setActiveTab={setActivePage} />
-      {/* <QuickAccess /> */}
-      <Dashboard activePage={activePage} />
+      <div className='min-h-screen'>
+        <Navbar activeTab={activePage} setActiveTab={setActivePage} />
+        {/* <QuickAccess /> */}
+        <Dashboard activePage={activePage} />
+      </div>
     </>
   );
 }
