@@ -8,9 +8,11 @@ export const SettingsProvider = ({children}) => {
   const [bgType, setBgType] = useState('default'); 
   const [bgFile, setBgFile] = useState(null); 
   const [bgFileName, setBgFileName] = useState('');
+
   const [bgBlur, setBgBlur] = useState(0);
   const [bgBrightness, setBgBrightness] = useState(100);  
   const [widgetOpacity, setWidgetOpacity] = useState(100);
+  
   const [imgUrl, setImgUrl] = useState(null); 
 
   const handleFileUpload = async (e) => {

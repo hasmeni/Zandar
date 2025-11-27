@@ -10,7 +10,7 @@ const BackgroundWrapper = () => {
       if (storedType) {
         setBgType(storedType);
       }
-      
+
       if (storedType === "local") {
         const key = localStorage.getItem("bgImageKey");
         if (key) {
@@ -24,8 +24,9 @@ const BackgroundWrapper = () => {
           });
         }
       }
-    }, []);
 
+
+    }, []);
 
     const backgroundStyle = {
       filter: `brightness(${bgBrightness}%) blur(${bgBlur}px)`,

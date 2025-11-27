@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useContext, useRef } from "react";
 import { 
 Menu, Plus, Search, Settings2, Pencil, X, Github, Twitter, Youtube, 
-  Bot, Upload, Image as ImageIcon, FileVideo, Download, FileJson, Check
+  Bot, Upload, Image as ImageIcon, FileVideo, Download, FileJson, Check,
+  LucideOctagonAlert
  } from "lucide-react";
 import SearchBar from "../SearchBar";
 import BackupManager from "./BackupManager.jsx";
@@ -15,9 +16,48 @@ const SettingsPanel = ({ isOpen, onClose }) => {
   
   const fileInputRef = useRef(null);
   const { 
-    settingsOpen, setSettingsOpen, bgType, setBgType, handleFileUpload, bgFileName, 
-    bgBlur, setBgBlur, bgBrightness, setBgBrightness, widgetOpacity, setWidgetOpacity 
+    settingsOpen,
+    setSettingsOpen, 
+    bgType, 
+    setBgType, 
+    handleFileUpload, 
+    bgFileName, 
+
+    // adjustments
+    bgBlur, setBgBlur, 
+    bgBrightness, setBgBrightness, 
+    widgetOpacity, setWidgetOpacity 
   } = useContext(SettingsContext);
+
+  // Load initial values
+  useEffect(() => {
+    const storedBrightness = localStorage.getItem("bgBrightness");
+    const storedBlur = localStorage.getItem("bgBlur");
+    const storedOpacity = localStorage.getItem("widgetOpacity");
+
+    if (storedBrightness !== null) {
+      setBgBrightness(Number(storedBrightness));
+    }
+    if (storedBlur !== null) {
+      setBgBlur(Number(storedBlur));
+    }
+    if (storedBlur !== null) {
+      setWidgetOpacity(Number(storedBlur));
+    }
+  }, []);
+
+  // Save changes 
+  useEffect(() => {
+    localStorage.setItem("bgBrightness", bgBrightness);
+  }, [bgBrightness]);
+
+  useEffect(() => {
+    localStorage.setItem("bgBlur", bgBlur);
+  }, [bgBlur]);
+
+  useEffect(() => {
+    localStorage.setItem("widgetOpacity", widgetOpacity);
+  }, [widgetOpacity]);
 
   useEffect(() => {
     const handleEscape = (e) => {
@@ -28,11 +68,6 @@ const SettingsPanel = ({ isOpen, onClose }) => {
     window.addEventListener("keydown", handleEscape);
     return () => window.removeEventListener("keydown", handleEscape);
   }, [isOpen, onClose]);
-
-  const handleBgType = () => {
-    
-  }
-
 
   return (
     <>
