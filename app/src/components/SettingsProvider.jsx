@@ -1,4 +1,4 @@
-import React, { createContext, useState } from 'react';
+import React, { createContext, useState, useEffect, useRef } from 'react';
 import { saveImage } from "../services/db/imageStore.js"
 
 export const SettingsContext = createContext();
@@ -9,11 +9,44 @@ export const SettingsProvider = ({children}) => {
   const [bgFile, setBgFile] = useState(null); 
   const [bgFileName, setBgFileName] = useState('');
 
-  const [bgBlur, setBgBlur] = useState(0);
-  const [bgBrightness, setBgBrightness] = useState(100);  
-  const [widgetOpacity, setWidgetOpacity] = useState(100);
+  // const [bgBlur, setBgBlur] = useState(0);
+  // const [bgBrightness, setBgBrightness] = useState(100);  
+  // const [widgetOpacity, setWidgetOpacity] = useState(100);
   
+
+  // Lazy initialization - load from localStorage immediately
+  const [bgBlur, setBgBlur] = useState(() => {
+    const stored = localStorage.getItem("bgBlur");
+    return stored !== null ? Number(stored) : 0;
+  });
+
+  const [bgBrightness, setBgBrightness] = useState(() => {
+    const stored = localStorage.getItem("bgBrightness");
+    return stored !== null ? Number(stored) : 100;
+  });
+
+  const [widgetOpacity, setWidgetOpacity] = useState(() => {
+    const stored = localStorage.getItem("widgetOpacity");
+    return stored !== null ? Number(stored) : 100;
+  });
+  
+
   const [imgUrl, setImgUrl] = useState(null); 
+
+  // Save changes - now safe because initial values are already correct
+  useEffect(() => {
+    localStorage.setItem("bgBrightness", bgBrightness);
+  }, [bgBrightness]);
+  
+  useEffect(() => {
+    localStorage.setItem("bgBlur", bgBlur);
+  }, [bgBlur]);
+  
+  useEffect(() => {
+    localStorage.setItem("widgetOpacity", widgetOpacity);
+  }, [widgetOpacity]);
+
+
 
   const handleFileUpload = async (e) => {
     const file = e.target.files[0];

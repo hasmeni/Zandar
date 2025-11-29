@@ -29,35 +29,7 @@ const SettingsPanel = ({ isOpen, onClose }) => {
     widgetOpacity, setWidgetOpacity 
   } = useContext(SettingsContext);
 
-  // Load initial values
-  useEffect(() => {
-    const storedBrightness = localStorage.getItem("bgBrightness");
-    const storedBlur = localStorage.getItem("bgBlur");
-    const storedOpacity = localStorage.getItem("widgetOpacity");
 
-    if (storedBrightness !== null) {
-      setBgBrightness(Number(storedBrightness));
-    }
-    if (storedBlur !== null) {
-      setBgBlur(Number(storedBlur));
-    }
-    if (storedBlur !== null) {
-      setWidgetOpacity(Number(storedBlur));
-    }
-  }, []);
-
-  // Save changes 
-  useEffect(() => {
-    localStorage.setItem("bgBrightness", bgBrightness);
-  }, [bgBrightness]);
-
-  useEffect(() => {
-    localStorage.setItem("bgBlur", bgBlur);
-  }, [bgBlur]);
-
-  useEffect(() => {
-    localStorage.setItem("widgetOpacity", widgetOpacity);
-  }, [widgetOpacity]);
 
   useEffect(() => {
     const handleEscape = (e) => {
