@@ -13,7 +13,6 @@ function App() {
     <SettingsProvider>
       <div className="relative w-screen h-screen overflow-hidden text-gray-200 font-sans selection:bg-purple-500/30">
         <BackgroundWrapper />
-
         <div className="relative z-10 flex flex-col  h-full">
           <Navbar activeTab={activePage} setActiveTab={setActivePage} />
           <Dashboard activePage={activePage} />
