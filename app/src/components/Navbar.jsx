@@ -70,7 +70,6 @@ export default function NavBar({ activeTab, setActiveTab }) {
           setActiveTab("");
         }
       }
-
       setDeleteConfirm(null);
     } catch (error) {
       console.error("Failed to delete page:", error);
@@ -89,17 +88,17 @@ export default function NavBar({ activeTab, setActiveTab }) {
     }
 
     const maxOrder = getPageOrder();
-
+    const pageUUID = uuidv4();
+    
     try {
       await db.pages.add({
-        uuid: uuidv4(),
+        uuid: pageUUID,
         title: newPage.title,
         order: maxOrder + 1,
         createdAt: now(),
         updatedAt: now(),
       });
-
-      setActiveTab(newPage.uuid);
+      setActiveTab(pageUUID);
       setNewPage({ title: "" });
       setNewPageDialog(false);
     } catch (error) {
@@ -128,27 +127,27 @@ export default function NavBar({ activeTab, setActiveTab }) {
   const handleDragLeave = () => {
     setDragOverIndex(null);
   };
-  
+
   // const handlePageDrop = async (e, targetIndex) => {
   //   e.preventDefault();
   //   e.stopPropagation();
-  
+
   //   // Dragged on itself
   //   if (!draggedPage || draggedPage.index === targetIndex) {
   //     setDraggedPage(null);
   //     setDragOverIndex(null);
   //     return;
   //   }
-  
+
   //   const pages = [...pages].sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
   //   const draggedPageIndex = pages.findIndex((p) => p.id === draggedPage.id);
   //   const targetPageIndex = pages.findIndex((p) => p.id === targetIndex.id);
-  
+
   //   if (draggedPageIndex === -1 || targetPageIndex === -1) {
   //     const reorderedPages = [...pages];
   //     const [removed] = reorderedPages.splice(draggedPageIndex, 1);
   //     reorderedPages.splice(targetPageIndex, 0, removed);
-  
+
   //     const updates = reorderedPages.map((page, index) =>
   //       db.pages.update(page.id, {
   //         title: page.title,
@@ -156,44 +155,44 @@ export default function NavBar({ activeTab, setActiveTab }) {
   //         updatedAt: now(),
   //       })
   //     );
-  
+
   //     await Promise.all(updates);
   //   }
-  
+
   //   // setPages(reorderedPages);
   //   setDraggedPage(null);
   //   setDragOverIndex(null);
   // };
-  
+
   const handlePageDrop = async (e, targetIndex) => {
     e.preventDefault();
     e.stopPropagation();
-  
+
     if (!draggedPage) return;
-  
+
     const sortedPages = [...pages].sort(
-      (a, b) => (a.order ?? 0) - (b.order ?? 0)
+      (a, b) => (a.order ?? 0) - (b.order ?? 0),
     );
-  
+
     const from = draggedPage.index;
     const to = targetIndex;
-  
+
     // Remove dragged item
     const [movedPage] = sortedPages.splice(from, 1);
-  
+
     // Insert it into new index
     sortedPages.splice(to, 0, movedPage);
-  
+
     // Rewrite orders
     const updates = sortedPages.map((page, index) =>
       db.pages.update(page.id, {
         order: index,
         updatedAt: now(),
-      })
+      }),
     );
-  
+
     await Promise.all(updates);
-  
+
     setDraggedPage(null);
     setDragOverIndex(null);
   };
@@ -403,7 +402,7 @@ export default function NavBar({ activeTab, setActiveTab }) {
                   dragOverIndex === index && draggedPage?.index !== index;
 
                 return (
-                  <div
+                  <button
                     key={page.id}
                     draggable
                     onDragStart={(e) => handleDragStart(e, page, index)}
@@ -411,8 +410,9 @@ export default function NavBar({ activeTab, setActiveTab }) {
                     onDragOver={(e) => handleDragOver(e, index)}
                     onDragLeave={handleDragLeave}
                     onDrop={(e) => handlePageDrop(e, index)}
+                    onClick={() => setActiveTab(page.uuid)}
                     className={`
-                      px-5 py-2 rounded-xl cursor-move transition-all duration-200
+                      px-5 py-2 rounded-xl transition-all duration-200
                       ${
                         activeTab === page.uuid
                           ? "bg-white text-sm text-black font-bold"
@@ -423,13 +423,8 @@ export default function NavBar({ activeTab, setActiveTab }) {
                       ${isDropTarget && activeTab == page.uuid ? "border border-black scale-95" : ""}
                     `}
                   >
-                    <button
-                      onClick={() => setActiveTab(page.uuid)}
-                      className="w-full"
-                    >
-                      {page.title}
-                    </button>
-                  </div>
+                    <span className="w-full">{page.title}</span>
+                  </button>
                 );
               })}
 

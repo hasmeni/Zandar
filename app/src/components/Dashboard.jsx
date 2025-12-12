@@ -266,7 +266,7 @@ const Dashboard = ({ activePage = "c9f9bcf-2a55-4784-8a9b-637cbe8efba0" }) => {
                           onDragOver={(e) => handleWidgetDragOver(e, widget)}
                           onDrop={(e) => handleWidgetDrop(e, widget)}
                           className={`
-                            cursor-move transition-all duration-200
+                            transition-all duration-200
                             ${isDragging ? "opacity-30 scale-95" : "opacity-100 scale-100"}
                           `}
                         >
