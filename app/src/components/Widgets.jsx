@@ -32,12 +32,12 @@ const Widget = ({ widget, widgets, setWidgets }) => {
     if (url.startsWith("http://") || url.startsWith("https://")) return url;
     return `https://${url}`;
   }
-  
+
   const saveEditedLink = async (id) => {
     await db.links.update(id, {
       name: editLinkData.name,
       url: normalizeURL(editLinkData.url),
-      updatedAt: now()
+      updatedAt: now(),
     });
 
     setEditingLink(null);
@@ -359,7 +359,14 @@ const Widget = ({ widget, widgets, setWidgets }) => {
               return (
                 <>
                   {isEditingLink ? (
-                    <div className="bg-[#27272a] p-5 rounded-lg space-y-2 mt-2">
+                    <div
+                      className="bg-[#27272a] p-5 rounded-lg space-y-2 mt-2"
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          saveEditedLink(l.id);
+                        }
+                      }}
+                    >
                       <input
                         placeholder="Name"
                         className="w-full bg-[#18181b] text-white border border-gray-700 px-3 py-2 rounded-lg text-sm focus:outline-none focus:border-gray-600 placeholder-gray-600"
@@ -465,7 +472,14 @@ const Widget = ({ widget, widgets, setWidgets }) => {
             })}
 
             {showAddLink ? (
-              <div className="bg-[#27272a] p-3 rounded-lg space-y-2 mt-2">
+              <div
+                className="bg-[#27272a] p-3 rounded-lg space-y-2 mt-2"
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    addLink(widget.id);
+                  }
+                }}
+              >
                 <input
                   placeholder="Name"
                   className="w-full bg-[#18181b] text-white border border-gray-700 px-3 py-2 rounded-lg text-sm focus:outline-none focus:border-gray-600 placeholder-gray-600"

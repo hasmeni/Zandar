@@ -45,7 +45,7 @@ export default function NavBar({ activeTab, setActiveTab }) {
         updatedAt: now(),
       });
     } catch (error) {
-      alert("Error: Failed to update page title");
+      alert("Error: Failed to update page title", error);
     }
   };
 
@@ -128,42 +128,6 @@ export default function NavBar({ activeTab, setActiveTab }) {
     setDragOverIndex(null);
   };
 
-  // const handlePageDrop = async (e, targetIndex) => {
-  //   e.preventDefault();
-  //   e.stopPropagation();
-
-  //   // Dragged on itself
-  //   if (!draggedPage || draggedPage.index === targetIndex) {
-  //     setDraggedPage(null);
-  //     setDragOverIndex(null);
-  //     return;
-  //   }
-
-  //   const pages = [...pages].sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
-  //   const draggedPageIndex = pages.findIndex((p) => p.id === draggedPage.id);
-  //   const targetPageIndex = pages.findIndex((p) => p.id === targetIndex.id);
-
-  //   if (draggedPageIndex === -1 || targetPageIndex === -1) {
-  //     const reorderedPages = [...pages];
-  //     const [removed] = reorderedPages.splice(draggedPageIndex, 1);
-  //     reorderedPages.splice(targetPageIndex, 0, removed);
-
-  //     const updates = reorderedPages.map((page, index) =>
-  //       db.pages.update(page.id, {
-  //         title: page.title,
-  //         order: index,
-  //         updatedAt: now(),
-  //       })
-  //     );
-
-  //     await Promise.all(updates);
-  //   }
-
-  //   // setPages(reorderedPages);
-  //   setDraggedPage(null);
-  //   setDragOverIndex(null);
-  // };
-
   const handlePageDrop = async (e, targetIndex) => {
     e.preventDefault();
     e.stopPropagation();
@@ -213,14 +177,13 @@ export default function NavBar({ activeTab, setActiveTab }) {
 
   return (
     <>
-      {/* <nav className="bg-[#161616] font-sans text-white border-b border-gray-800"> */}
       <nav
         className="border-gray-200"
         style={{
           backgroundColor: `rgba(10, 10, 10, ${Math.max(0.8, widgetOpacity / 100)})`,
         }}
       >
-        <div className="flex items-center justify-between h-12 px-4">
+        <div className="flex items-center justify-between h-12 px-4 font-sans">
           {/* Left side - Dropdown & Tabs */}
           <div className="flex items-center gap-4">
             {/* Dropdown Menu */}
