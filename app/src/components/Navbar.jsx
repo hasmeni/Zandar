@@ -403,9 +403,10 @@ export default function NavBar({ activeTab, setActiveTab }) {
               </button>
             </div>
           </div>
-
+          
           {/* Right side - Icons */}
           <div className="flex items-center gap-4 px-1">
+            <h2 className="text-white text-sm font-sans font-bold border border-white rounded-xl px-3 py-0.5">Beta</h2>
             <div className="flex items-center gap-2">
               <button
                 className="text-gray-400 hover:text-white transition-colors p-1.5 rounded hover:bg-gray-800"
