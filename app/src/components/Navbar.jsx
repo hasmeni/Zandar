@@ -195,7 +195,6 @@ export default function NavBar({ activeTab, setActiveTab }) {
               >
                 <Menu size={18} />
               </button>
-
               {/* Dropdown Menu */}
               {dropdownOpen && (
                 <>
@@ -204,7 +203,6 @@ export default function NavBar({ activeTab, setActiveTab }) {
                     className="fixed inset-0 z-30 bg-black/20 backdrop-blur-[2px]"
                     onClick={() => setDropdownOpen(false)}
                   />
-
                   {/* Dropdown with depth layers */}
                   <div className="absolute top-full left-0 mt-4 w-80 z-40 bg-[#161616] border border-white/[0.08] rounded-lg shadow-[0_8px_32px_rgba(0,0,0,0.6),0_4px_0px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.05)] overflow-hidden">
                     {/* Header with subtle top light */}
@@ -248,46 +246,48 @@ export default function NavBar({ activeTab, setActiveTab }) {
 
                     {/* Pages List */}
                     <div className="p-2 max-h-[400px] overflow-y-auto">
-                      {SortedPage.map((page) => (
-                        <button
-                          key={page.id}
-                          onClick={() => {
-                            setActiveTab(page.uuid);
-                            setDropdownOpen(false);
-                          }}
-                          className={`
-                          w-full group/item relative flex items-center justify-between
-                          py-2 px-3 mb-1 rounded-lg transition-all duration-200
-                          ${
-                            activeTab === page.uuid
-                              ? "bg-gradient-to-b from-white/[0.12] to-white/[0.08] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.15),inset_0_-1px_0_rgba(0,0,0,0.2),0_4px_16px_rgba(0,0,0,0.4)]"
-                              : "text-white/50 hover:bg-white/[0.03] hover:text-white hover:shadow-[0_2px_8px_rgba(0,0,0,0.2)]"
-                          }
-                        `}
-                        >
-                          {editingPageTitleById === page.id ? (
-                            <input
-                              value={page.title}
-                              onChange={(e) =>
-                                setPages((prev) =>
-                                  prev.map((p) =>
-                                    p.id === page.id
-                                      ? { ...p, title: e.target.value }
-                                      : p,
-                                  ),
-                                )
-                              }
-                              onBlur={() => {
-                                const currentPage = pages.find(
-                                  (p) => p.id === page.id,
-                                );
-                                if (currentPage) {
-                                  updatePageTitle(page.id, currentPage.title);
+                      {SortedPage.map((page, index) => {
+                        const isDragging = draggedPage?.index === index;
+                        const isDropTarget = dragOverIndex === index && draggedPage?.index !== index;
+
+                        return (
+                          <button
+                            key={page.id}
+                            draggable
+                            onDragStart={(e) => handleDragStart(e, page, index)}
+                            onDragEnd={handleDragEnd}
+                            onDragOver={(e) => handleDragOver(e, index)}
+                            onDragLeave={handleDragLeave}
+                            onDrop={(e) => handlePageDrop(e, index)}
+                            onClick={() => {
+                              setActiveTab(page.uuid);
+                              setDropdownOpen(false);
+                            }}
+                            className={`
+                            w-full group/item relative flex items-center justify-between
+                            py-2 px-3 mb-1 rounded-lg transition-all duration-200
+                            ${activeTab === page.uuid
+                                ? "bg-gradient-to-b from-white/[0.12] to-white/[0.08] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.15),inset_0_-1px_0_rgba(0,0,0,0.2),0_4px_16px_rgba(0,0,0,0.4)]"
+                                : "text-white/50 hover:bg-white/[0.03] hover:text-white hover:shadow-[0_2px_8px_rgba(0,0,0,0.2)]"
+                            }
+                            ${isDragging ? "opacity-30 scale-95" : "opacity-100 scale-100"}
+                            ${isDropTarget ? "ring-2 ring-gray-300 scale-95" : ""}
+                            ${isDropTarget && activeTab == page.uuid ? "border border-black scale-95" : ""}
+                          `}
+                          >
+                            {editingPageTitleById === page.id ? (
+                              <input
+                                value={page.title}
+                                onChange={(e) =>
+                                  setPages((prev) =>
+                                    prev.map((p) =>
+                                      p.id === page.id
+                                        ? { ...p, title: e.target.value }
+                                        : p,
+                                    ),
+                                  )
                                 }
-                                setEditingPageTitleById(null);
-                              }}
-                              onKeyDown={(e) => {
-                                if (e.key === "Enter") {
+                                onBlur={() => {
                                   const currentPage = pages.find(
                                     (p) => p.id === page.id,
                                   );
@@ -295,54 +295,65 @@ export default function NavBar({ activeTab, setActiveTab }) {
                                     updatePageTitle(page.id, currentPage.title);
                                   }
                                   setEditingPageTitleById(null);
-                                }
-                                if (e.key === "Escape") {
-                                  setEditingPageTitleById(null);
-                                }
-                              }}
-                              onClick={(e) => e.stopPropagation()}
-                              autoFocus
-                              className="flex-1 bg-[#27272a] text-white text-sm font-medium px-3 py-1.5 rounded-lg focus:outline-none focus:ring-1 focus:ring-gray-600"
-                            />
-                          ) : (
-                            <span
-                              className={`
-                            text-sm font-medium flex-1 text-left
-                            ${activeTab === page.uuid ? "text-white" : "text-neutral-500"}
-                          `}
-                            >
-                              {page.title}
-                            </span>
-                          )}
-
-                          {/* Action Buttons - INSIDE button element */}
-                          {!editingPageTitleById && (
-                            <div className="flex items-center gap-1 opacity-0 group-hover/item:opacity-100 transition-opacity">
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setEditingPageTitleById(page.id);
                                 }}
-                                className="text-neutral-500 hover:text-white hover:bg-white/[0.08] p-1.5 rounded-lg transition-all"
-                                aria-label="Edit page title"
-                              >
-                                <Pencil size={14} />
-                              </button>
-
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setDeleteConfirm(page);
+                                onKeyDown={(e) => {
+                                  if (e.key === "Enter") {
+                                    const currentPage = pages.find(
+                                      (p) => p.id === page.id,
+                                    );
+                                    if (currentPage) {
+                                      updatePageTitle(page.id, currentPage.title);
+                                    }
+                                    setEditingPageTitleById(null);
+                                  }
+                                  if (e.key === "Escape") {
+                                    setEditingPageTitleById(null);
+                                  }
                                 }}
-                                className="text-neutral-500 hover:text-red-400 hover:bg-white/[0.08] p-1.5 rounded-lg transition-all"
-                                aria-label="Delete page"
+                                onClick={(e) => e.stopPropagation()}
+                                autoFocus
+                                className="flex-1 bg-[#27272a] text-white text-sm font-medium px-3 py-1.5 rounded-lg focus:outline-none focus:ring-1 focus:ring-gray-600"
+                              />
+                            ) : (
+                              <span
+                                className={`
+                              text-sm font-medium flex-1 text-left
+                              ${activeTab === page.uuid ? "text-white" : "text-neutral-500"}
+                            `}
                               >
-                                <X size={14} />
-                              </button>
-                            </div>
-                          )}
-                        </button>
-                      ))}
+                                {page.title}
+                              </span>
+                            )}
+  
+                            {/* Action Buttons - INSIDE button element */}
+                            {!editingPageTitleById && (
+                              <div className="flex items-center gap-1 opacity-0 group-hover/item:opacity-100 transition-opacity">
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setEditingPageTitleById(page.id);
+                                  }}
+                                  className="text-neutral-500 hover:text-white hover:bg-white/[0.08] p-1.5 rounded-lg transition-all"
+                                  aria-label="Edit page title"
+                                >
+                                  <Pencil size={14} />
+                                </button>
+  
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setDeleteConfirm(page);
+                                  }}
+                                  className="text-neutral-500 hover:text-red-400 hover:bg-white/[0.08] p-1.5 rounded-lg transition-all"
+                                  aria-label="Delete page"
+                                >
+                                  <X size={14} />
+                                </button>
+                              </div>
+                            )}
+                          </button>
+                        )
+                      })}
                     </div>
 
                     {/* Footer */}

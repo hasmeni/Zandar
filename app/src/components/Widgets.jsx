@@ -400,7 +400,7 @@ const Widget = ({ widget, widgets, setWidgets }) => {
                           onClick={() => saveEditedLink(l.id)}
                           className="flex-auto bg-white text-black px-3 py-2 rounded-lg text-sm font-medium hover:bg-gray-200 transition-colors"
                         >
-                          Save
+                          Edit
                         </button>
                         <button
                           onClick={() => {
