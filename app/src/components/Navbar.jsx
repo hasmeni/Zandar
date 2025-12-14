@@ -20,7 +20,7 @@ export default function NavBar({ activeTab, setActiveTab }) {
   const [editingPageTitleById, setEditingPageTitleById] = useState(null);
   // const [settingsOpen, setSettingsOpen] = useState(false);
 
-  const { widgetOpacity, settingsOpen, setSettingsOpen } =
+  const { widgetOpacity, settingsOpen, setSettingsOpen, bgType } =
     useContext(SettingsContext);
 
   const now = () => new Date().toISOString();
@@ -89,7 +89,7 @@ export default function NavBar({ activeTab, setActiveTab }) {
 
     const maxOrder = getPageOrder();
     const pageUUID = uuidv4();
-    
+
     try {
       await db.pages.add({
         uuid: pageUUID,
@@ -403,10 +403,12 @@ export default function NavBar({ activeTab, setActiveTab }) {
               </button>
             </div>
           </div>
-          
+
           {/* Right side - Icons */}
           <div className="flex items-center gap-4 px-1">
-            <h2 className="text-white text-sm font-sans font-bold border border-white rounded-xl px-3 py-0.5">Beta</h2>
+            <h2 className={`text-white text-sm font-sans font-bold rounded-xl px-3 py-1 ${bgType == "local" ? "shadow-[0_0_5px_rgba(255,255,255,0.3)]" : "border border-white font-instrument"}`}>
+              Beta
+            </h2>
             <div className="flex items-center gap-2">
               <button
                 className="text-gray-400 hover:text-white transition-colors p-1.5 rounded hover:bg-gray-800"

@@ -124,8 +124,9 @@ const Widget = ({ widget, widgets, setWidgets }) => {
     );
 
   // Toggle Collapse
-  const toggleCollapse = (id, collapsed) =>
+  const toggleCollapse = (id, collapsed) => {
     db.widgets.update(id, { collapsed: !collapsed, updatedAt: now() });
+  };
 
   // Update Widget Title
   const updateWidgetTitle = (id, title) => {
@@ -361,15 +362,18 @@ const Widget = ({ widget, widgets, setWidgets }) => {
                   {isEditingLink ? (
                     <div
                       className="bg-[#27272a] p-5 rounded-lg space-y-2 mt-2"
+                      style={widgetStyle}
                       onKeyDown={(e) => {
                         if (e.key === "Enter") {
                           saveEditedLink(l.id);
                         }
                       }}
-                    >
+                      onBlur={() => isEditingLink(false)}
+                    > 
                       <input
                         placeholder="Name"
                         className="w-full bg-[#18181b] text-white border border-gray-700 px-3 py-2 rounded-lg text-sm focus:outline-none focus:border-gray-600 placeholder-gray-600"
+                        style={widgetStyle}
                         value={editLinkData.name}
                         onChange={(e) => {
                           setEditLinkData({
@@ -382,6 +386,7 @@ const Widget = ({ widget, widgets, setWidgets }) => {
                       <input
                         placeholder="URL"
                         className="w-full bg-[#18181b] text-white border border-gray-700 px-3 py-2 rounded-lg text-sm focus:outline-none focus:border-gray-600 placeholder-gray-600"
+                        style={widgetStyle}
                         value={editLinkData.url}
                         onChange={(e) =>
                           setEditLinkData({
@@ -390,10 +395,10 @@ const Widget = ({ widget, widgets, setWidgets }) => {
                           })
                         }
                       />
-                      <div className="flex gap-2">
+                      <div className="flex justify-between gap-2">
                         <button
                           onClick={() => saveEditedLink(l.id)}
-                          className="flex-1 bg-white text-black px-3 py-2 rounded-lg text-sm font-medium hover:bg-gray-200 transition-colors"
+                          className="flex-auto bg-white text-black px-3 py-2 rounded-lg text-sm font-medium hover:bg-gray-200 transition-colors"
                         >
                           Save
                         </button>
@@ -402,7 +407,7 @@ const Widget = ({ widget, widgets, setWidgets }) => {
                             setEditingLink(null);
                             setEditLinkData({ name: "", url: "" });
                           }}
-                          className="px-3 py-2 bg-[#18181b] text-gray-400 rounded-lg text-sm hover:bg-[#27272a] hover:text-gray-300 transition-colors"
+                          className="flex-auto px-3 py-2 bg-[#18181b] text-gray-200 rounded-lg text-sm hover:bg-[#27272a] hover:text-gray-300 transition-colors shadow-[0_4px_10px_rgba(0,0,0,0.4)]]"
                         >
                           Cancel
                         </button>
@@ -479,6 +484,8 @@ const Widget = ({ widget, widgets, setWidgets }) => {
                     addLink(widget.id);
                   }
                 }}
+                style={widgetStyle}
+                onBlur={() => setShowAddLink(false)}
               >
                 <input
                   placeholder="Name"
