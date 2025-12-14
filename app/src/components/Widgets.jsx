@@ -75,7 +75,7 @@ const Widget = ({ widget, widgets, setWidgets }) => {
   // Add Link
   const addLink = async (widgetId) => {
     if (!newLink.name.trim() || !newLink.url.trim()) {
-      alert("Please fill in name & URL");
+      // alert("Please fill in name & URL");
       return;
     }
 
@@ -357,6 +357,7 @@ const Widget = ({ widget, widgets, setWidgets }) => {
               const isDragging = draggedLink?.id === l.id;
               const isDropTarget = dragOverLink === l.id;
               const isEditingLink = editingLink === l.id;
+
               return (
                 <>
                   {isEditingLink ? (
@@ -369,7 +370,7 @@ const Widget = ({ widget, widgets, setWidgets }) => {
                         }
                       }}
                       onBlur={() => isEditingLink(false)}
-                    > 
+                    >
                       <input
                         placeholder="Name"
                         className="w-full bg-[#18181b] text-white border border-gray-700 px-3 py-2 rounded-lg text-sm focus:outline-none focus:border-gray-600 placeholder-gray-600"
@@ -397,8 +398,19 @@ const Widget = ({ widget, widgets, setWidgets }) => {
                       />
                       <div className="flex justify-between gap-2">
                         <button
+                          disabled={
+                            !editLinkData.name.trim() ||
+                            !editLinkData.url.trim()
+                          }
                           onClick={() => saveEditedLink(l.id)}
-                          className="flex-auto bg-white text-black px-3 py-2 rounded-lg text-sm font-medium hover:bg-gray-200 transition-colors"
+                          className={`flex-auto bg-white text-black px-3 py-2 rounded-lg text-sm font-medium transition-colors
+                            ${
+                              !editLinkData.name.trim() ||
+                              !editLinkData.url.trim()
+                                ? "bg-zinc-800 text-neutral-600 cursor-not-allowed"
+                                : "bg-white text-black hover:bg-gray-200"
+                            }
+                            `}
                         >
                           Edit
                         </button>
@@ -485,7 +497,7 @@ const Widget = ({ widget, widgets, setWidgets }) => {
                   }
                 }}
                 style={widgetStyle}
-                onBlur={() => setShowAddLink(false)}
+                // onBlur={() => setShowAddLink(false)}
               >
                 <input
                   placeholder="Name"
@@ -506,8 +518,13 @@ const Widget = ({ widget, widgets, setWidgets }) => {
                 />
                 <div className="flex gap-2">
                   <button
+                    disabled={!newLink.url && !newLink.name}
                     onClick={() => addLink(widget.id)}
-                    className="flex-1 bg-white text-black px-3 py-2 rounded-lg text-sm font-medium hover:bg-gray-200 transition-colors"
+                    className={`flex-1 bg-white text-black px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                      !newLink.url || !newLink.name
+                        ? "bg-zinc-800 text-neutral-600 cursor-not-allowed"
+                        : "bg-white text-black hover:bg-gray-200"
+                    }`}
                   >
                     Add
                   </button>
