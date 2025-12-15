@@ -12,6 +12,14 @@ dotenv.config();
 
 const PORT = process.env.PORT || 3001;
 
+function isYouTube(url) {
+  return url.includes("youtube.com") || url.includes("youtu.be");
+}
+
+function isTwitterX(url) {
+  return url.includes("x.com") || url.includes("twitter.com");
+}
+
 app.post("/api/preview", async (req, res) => {
   const { url } = req.body;
 
@@ -21,7 +29,7 @@ app.post("/api/preview", async (req, res) => {
 
   try {
     // Special handling for X / twitter
-    if (url.includes("x.com") || url.includes("twitter.com")) {
+    if (isTwitterX(url)) {
       const oembedUrl = `https://publish.twitter.com/oembed?url=${encodeURIComponent(url)}`;
       const response = await fetch(oembedUrl);
       // console.log(response);
@@ -30,8 +38,21 @@ app.post("/api/preview", async (req, res) => {
 
       return res.json({
         title: `${data.author_name} | Twitter`,
-        html: data.html,
+        html: data.html,  
         type: "twitter",
+      });
+    }
+
+    if (isYouTube(url)) {
+      const oembed = await fetch(
+        `https://www.youtube.com/oembed?url=${encodeURIComponent(url)}&format=json`,
+      );
+      const data = await oembed.json();
+
+      return res.json({
+        title: data.title,
+        provider: "youtube",
+        thumbnail: data.thumbnail_url,
       });
     }
 
