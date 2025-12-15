@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import {
   Plus,
   Trash2,
@@ -16,8 +16,19 @@ const Widget = ({ widget, widgets, setWidgets }) => {
   const [showAddLink, setShowAddLink] = useState(false);
   const [editingWidgetTitle, setEditingWidgetTitle] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+
   const [editingLink, setEditingLink] = useState(null);
   const [editLinkData, setEditLinkData] = useState({ name: "", url: "" });
+  const [newLink, setNewLink] = useState({ name: "", url: "" });
+  const [fetchedTitle, setFetchedTitle] = useState("");
+  const [isFetchingTitle, setIsFetchingTitle] = useState(false);
+
+  const [confirmDialog, setConfirmDialog] = useState({
+    show: false,
+    title: "",
+    message: "",
+    onConfirm: null,
+  });
 
   const [draggedLink, setDraggedLink] = useState(null);
   const [dragOverLink, setDragOverLink] = useState(null);
@@ -49,18 +60,6 @@ const Widget = ({ widget, widgets, setWidgets }) => {
     borderColor: `rgba(38, 38, 38, ${widgetOpacity / 100})`,
   };
 
-  const [newLink, setNewLink] = useState({
-    name: "",
-    url: "",
-  });
-
-  const [confirmDialog, setConfirmDialog] = useState({
-    show: false,
-    title: "",
-    message: "",
-    onConfirm: null,
-  });
-
   const showConfirmDialog = (title, message, onConfirm) =>
     setConfirmDialog({ show: true, title, message, onConfirm });
 
@@ -74,7 +73,10 @@ const Widget = ({ widget, widgets, setWidgets }) => {
 
   // Add Link
   const addLink = async (widgetId) => {
-    if (!newLink.name.trim() || !newLink.url.trim()) {
+    // handleUrlPaste(newLink.url);
+
+    // if (!newLink.name.trim() || !newLink.url.trim()) {
+    if (!newLink.url.trim()) {
       // alert("Please fill in name & URL");
       return;
     }
@@ -104,6 +106,70 @@ const Widget = ({ widget, widgets, setWidgets }) => {
     setNewLink({ name: "", url: "" });
     setShowAddLink(false);
   };
+
+  // const handleUrlPaste = async (url) => {
+  //   setNewLink((prev) => ({ ...prev, url }));
+
+  //   try {
+  //     const res = await fetch("http://localhost:3001/api/preview", {
+  //       method: "POST",
+  //       headers: { "Content-Type": "application/json" },
+  //       body: JSON.stringify({ url }),
+  //     });
+
+  //     const data = await res.json();
+  //     setFetchedTitle(data.title);
+
+  //     if (data.title) {
+  //       setNewLink((prev) => ({ ...prev, name: data.title }));
+  //     }
+  //     console.log(fetchedTitle, "fetched title");
+  //   } catch {
+  //     console.log("Nhi HUA TITLE FETCH");
+  //   }
+  // };
+
+  useEffect(() => {
+    if (!newLink.url) return;
+
+    const controller = new AbortController();
+
+    const timeout = setTimeout(async () => {
+      try {
+        setIsFetchingTitle(true);
+
+        // backend endpoint (recommended)
+        const res = await fetch("http://localhost:3001/api/preview", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ url: newLink.url }),
+          signal: controller.signal,
+        });
+
+        const data = await res.json();
+        setFetchedTitle(data.title);
+
+        // only autofill if user hasn't typed name/title
+        if (data.title && !newLink.name) {
+          setNewLink((prev) => ({
+            ...prev,
+            name: data.title,
+          }));
+        }
+      } catch (e) {
+        if (e.name !== "AbortError") {
+          console.error("Preview error", e);
+        }
+      } finally {
+        setIsFetchingTitle(false);
+      }
+    }, 600); // debounce
+
+    return () => {
+      clearTimeout(timeout);
+      controller.abort();
+    };
+  }, [newLink.url]);
 
   // Delete Link
   const deleteLink = (id) =>
@@ -369,7 +435,7 @@ const Widget = ({ widget, widgets, setWidgets }) => {
                           saveEditedLink(l.id);
                         }
                       }}
-                      onBlur={() => isEditingLink(false)}
+                      // onBlur={() => isEditingLink(false)}
                     >
                       <input
                         placeholder="Name"
@@ -500,7 +566,7 @@ const Widget = ({ widget, widgets, setWidgets }) => {
                 // onBlur={() => setShowAddLink(false)}
               >
                 <input
-                  placeholder="Name"
+                  placeholder="Auto-filled title, editable"
                   className="w-full bg-[#18181b] text-white border border-gray-700 px-3 py-2 rounded-lg text-sm focus:outline-none focus:border-gray-600 placeholder-gray-600"
                   value={newLink.name}
                   onChange={(e) =>
@@ -512,13 +578,18 @@ const Widget = ({ widget, widgets, setWidgets }) => {
                   placeholder="URL"
                   className="w-full bg-[#18181b] text-white border border-gray-700 px-3 py-2 rounded-lg text-sm focus:outline-none focus:border-gray-600 placeholder-gray-600"
                   value={newLink.url}
-                  onChange={(e) =>
-                    setNewLink({ ...newLink, url: e.target.value })
-                  }
+                  onChange={(e) => {
+                    setNewLink({ ...newLink, url: e.target.value });
+                  }}
                 />
+
+                {isFetchingTitle && (
+                  <div className="text-xs text-gray-400">Fetching title…</div>
+                )}
+
                 <div className="flex gap-2">
                   <button
-                    disabled={!newLink.url && !newLink.name}
+                    disabled={!newLink.url || !newLink.name}
                     onClick={() => addLink(widget.id)}
                     className={`flex-1 bg-white text-black px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                       !newLink.url || !newLink.name
@@ -526,8 +597,10 @@ const Widget = ({ widget, widgets, setWidgets }) => {
                         : "bg-white text-black hover:bg-gray-200"
                     }`}
                   >
+                    {/* {isFetchingTitle ? "Fetching…" : "Add"}*/}
                     Add
                   </button>
+
                   <button
                     onClick={() => {
                       setShowAddLink(false);
@@ -538,6 +611,17 @@ const Widget = ({ widget, widgets, setWidgets }) => {
                     Cancel
                   </button>
                 </div>
+                {/* {newLink.name && (
+                  <div className="text-xs text-neutral-400 flex items-center gap-2">
+                    <img
+                      src={`https://www.google.com/s2/favicons?domain=${newLink.url}&sz=32`}
+                      className="w-6 h-6"
+                    />
+                    <div className="flex flex-col">
+                      <h2 className="truncate"><span> {newLink.name}</span></h2>
+                      <span className="truncate">{newLink.url}</span></div>
+                  </div>
+                )}*/}
               </div>
             ) : (
               <button
