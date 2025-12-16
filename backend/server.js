@@ -44,16 +44,26 @@ app.post("/api/preview", async (req, res) => {
     }
 
     if (isYouTube(url)) {
-      const oembed = await fetch(
-        `https://www.youtube.com/oembed?url=${encodeURIComponent(url)}&format=json`,
-      );
-      const data = await oembed.json();
+      try {
+        const oembed = await fetch(
+          `https://www.youtube.com/oembed?url=${encodeURIComponent(url)}&format=json`,
+        );
 
-      return res.json({
-        title: data.title,
-        provider: "youtube",
-        thumbnail: data.thumbnail_url,
-      });
+        if (!oembed.ok) {
+          throw new Error(`YouTube oEmbed returned ${oembed.status}`);
+        }
+
+        const data = await oembed.json();
+
+        return res.json({
+          title: data.title,
+          provider: "youtube",
+          thumbnail: data.thumbnail_url,
+        });
+      } catch (err) {
+        console.warn("YouTube oEmbed failed, falling back to HTML scrape:", err);
+        // fall through to generic handler below
+      }
     }
 
     // Normal websites
@@ -89,7 +99,7 @@ app.post("/api/preview", async (req, res) => {
     // console.log(title);
   } catch (err) {
     console.error("Preview fetch failed:", err);
-    res.json({ title: "Preview unavailable" });
+    res.json({ title: "Untitled" });
   }
 });
 

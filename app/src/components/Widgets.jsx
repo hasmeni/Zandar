@@ -12,6 +12,7 @@ import { v4 as uuidv4 } from "uuid";
 import { db } from "../services/db/schema.js";
 import dotenv from "dotenv";
 import { SettingsContext } from "../contexts/SettingsProvider.jsx";
+import LinkPreview from "./LinkPreview.jsx";
 
 const Widget = ({ widget, widgets, setWidgets }) => {
   const [showAddLink, setShowAddLink] = useState(false);
@@ -21,8 +22,10 @@ const Widget = ({ widget, widgets, setWidgets }) => {
   const [editingLink, setEditingLink] = useState(null);
   const [editLinkData, setEditLinkData] = useState({ name: "", url: "" });
   const [newLink, setNewLink] = useState({ name: "", url: "" });
-  // const [fetchedTitle, setFetchedTitle] = useState("");
+  const [fetchedTitle, setFetchedTitle] = useState(false);
   const [isFetchingTitle, setIsFetchingTitle] = useState(false);
+  const [editFetchedTitle, setEditFetchedTitle] = useState(false);
+  const [isFetchingEditTitle, setIsFetchingEditTitle] = useState(false);
 
   const [confirmDialog, setConfirmDialog] = useState({
     show: false,
@@ -84,8 +87,7 @@ const Widget = ({ widget, widgets, setWidgets }) => {
       return;
     }
 
-    let url = newLink.url.trim();
-    if (!url.startsWith("http")) url = `https://${url}`;
+    let url = normalizeURL(newLink.url.trim());
 
     const maxOrder =
       widget.links.length > 0
@@ -111,7 +113,10 @@ const Widget = ({ widget, widgets, setWidgets }) => {
   };
 
   useEffect(() => {
-    if (!newLink.url) return;
+    if (!newLink.url) {
+      setFetchedTitle(false);
+      return;
+    }
 
     const controller = new AbortController();
 
@@ -123,12 +128,11 @@ const Widget = ({ widget, widgets, setWidgets }) => {
         const res = await fetch(`${API_BASE}/api/preview`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ url: newLink.url }),
+          body: JSON.stringify({ url: normalizeURL(newLink.url) }),
           signal: controller.signal,
         });
 
         const data = await res.json();
-        // setFetchedTitle(data.title);
 
         // only autofill if user hasn't typed name/title
         if (data.title && !newLink.name) {
@@ -137,10 +141,14 @@ const Widget = ({ widget, widgets, setWidgets }) => {
             name: data.title,
           }));
         }
+
+        // show preview as long as we have a URL and got a response
+        setFetchedTitle(Boolean(data.title || newLink.url));
       } catch (e) {
         if (e.name !== "AbortError") {
           console.error("Preview error", e);
         }
+        setFetchedTitle(false);
       } finally {
         setIsFetchingTitle(false);
       }
@@ -151,6 +159,54 @@ const Widget = ({ widget, widgets, setWidgets }) => {
       controller.abort();
     };
   }, [newLink.url]);
+
+  // Auto-fetch preview title for edited links
+  useEffect(() => {
+    if (!editingLink) return;
+    if (!editLinkData.url) {
+      setEditFetchedTitle(false);
+      return;
+    }
+
+    const controller = new AbortController();
+
+    const timeout = setTimeout(async () => {
+      try {
+        setIsFetchingEditTitle(true);
+
+        const res = await fetch(`${API_BASE}/api/preview`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ url: normalizeURL(editLinkData.url) }),
+          signal: controller.signal,
+        });
+
+        const data = await res.json();
+
+        // only autofill if user hasn't typed name/title
+        if (data.title && !editLinkData.name) {
+          setEditLinkData((prev) => ({
+            ...prev,
+            name: data.title,
+          }));
+        }
+
+        setEditFetchedTitle(Boolean(data.title || editLinkData.url));
+      } catch (e) {
+        if (e.name !== "AbortError") {
+          console.error("Preview error (edit)", e);
+        }
+        setEditFetchedTitle(false);
+      } finally {
+        setIsFetchingEditTitle(false);
+      }
+    }, 600);
+
+    return () => {
+      clearTimeout(timeout);
+      controller.abort();
+    };
+  }, [editLinkData.url, editingLink]);
 
   // Delete Link
   const deleteLink = (id) =>
@@ -436,12 +492,12 @@ const Widget = ({ widget, widgets, setWidgets }) => {
                         className="w-full bg-[#18181b] text-white border border-gray-700 px-3 py-2 rounded-lg text-sm focus:outline-none focus:border-gray-600 placeholder-gray-600"
                         style={widgetStyle}
                         value={editLinkData.url}
-                        onChange={(e) =>
-                          setEditLinkData({
-                            ...editLinkData,
-                            url: e.target.value,
-                          })
-                        }
+                        onChange={(e) => {
+                          const urlValue = e.target.value;
+                          // When changing URL, reset name so a new title can be fetched
+                          setEditLinkData({ name: "", url: urlValue });
+                          setEditFetchedTitle(false);
+                        }}
                       />
                       <div className="flex justify-between gap-2">
                         <button
@@ -465,12 +521,27 @@ const Widget = ({ widget, widgets, setWidgets }) => {
                           onClick={() => {
                             setEditingLink(null);
                             setEditLinkData({ name: "", url: "" });
+                            setEditFetchedTitle(false);
                           }}
                           className="flex-auto px-3 py-2 bg-[#18181b] text-gray-200 rounded-lg text-sm hover:bg-[#27272a] hover:text-gray-300 transition-colors shadow-[0_4px_10px_rgba(0,0,0,0.4)]]"
                         >
                           Cancel
                         </button>
                       </div>
+
+                      {isFetchingEditTitle && (
+                        <div className="text-sm text-gray-400 mt-2">
+                          Fetching title…
+                        </div>
+                      )}
+
+                      <LinkPreview
+                        title={editLinkData.name}
+                        iconUrl={`https://www.google.com/s2/favicons?domain=${editLinkData.url}&sz=32`}
+                        url={editLinkData.url}
+                        isVisible={editFetchedTitle}
+                        onClick={() => saveEditedLink(l.id)}
+                      />
                     </div>
                   ) : (
                     <div
@@ -547,38 +618,40 @@ const Widget = ({ widget, widgets, setWidgets }) => {
                 // onBlur={() => setShowAddLink(false)}
               >
                 <input
-                  placeholder="Auto-filled title, editable"
+                  placeholder="Auto-fetched title"
                   className="w-full bg-[#18181b] text-white border border-gray-700 px-3 py-2 rounded-lg text-sm focus:outline-none focus:border-gray-600 placeholder-gray-600"
                   value={newLink.name}
                   onChange={(e) =>
                     setNewLink({ ...newLink, name: e.target.value })
                   }
-                  autoFocus
                 />
                 <input
-                  placeholder="URL"
+                  placeholder="Paste a link to auto-fetch title"
                   className="w-full bg-[#18181b] text-white border border-gray-700 px-3 py-2 rounded-lg text-sm focus:outline-none focus:border-gray-600 placeholder-gray-600"
                   value={newLink.url}
                   onChange={(e) => {
-                    setNewLink({ ...newLink, url: e.target.value });
+                    const urlValue = e.target.value;
+                    // When changing URL, reset name so a new title can be fetched
+                    setNewLink({ name: "", url: urlValue });
+                    setFetchedTitle(false);
                   }}
+                  autoFocus
                 />
 
                 {isFetchingTitle && (
-                  <div className="text-xs text-gray-400">Fetching title…</div>
+                  <div className="text-sm text-gray-400">Fetching title…</div>
                 )}
 
-                <div className="flex gap-2">
+                <div className="flex justify-between gap-2">
                   <button
                     disabled={!newLink.url || !newLink.name}
                     onClick={() => addLink(widget.id)}
-                    className={`flex-1 bg-white text-black px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    className={`flex-auto bg-white text-black px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                       !newLink.url || !newLink.name
                         ? "bg-zinc-800 text-neutral-600 cursor-not-allowed"
                         : "bg-white text-black hover:bg-gray-200"
                     }`}
                   >
-                    {/* {isFetchingTitle ? "Fetching…" : "Add"}*/}
                     Add
                   </button>
 
@@ -586,23 +659,21 @@ const Widget = ({ widget, widgets, setWidgets }) => {
                     onClick={() => {
                       setShowAddLink(false);
                       setNewLink({ name: "", url: "" });
+                      setFetchedTitle(false);
                     }}
-                    className="px-3 py-2 bg-[#18181b] text-gray-400 rounded-lg text-sm hover:bg-[#27272a] hover:text-gray-300 transition-colors"
+                    className="flex-auto px-3 py-2 bg-[#18181b] text-gray-400 rounded-lg text-sm hover:bg-[#27272a] hover:text-gray-300 transition-colors"
                   >
                     Cancel
                   </button>
                 </div>
-                {/* {newLink.name && (
-                  <div className="text-xs text-neutral-400 flex items-center gap-2">
-                    <img
-                      src={`https://www.google.com/s2/favicons?domain=${newLink.url}&sz=32`}
-                      className="w-6 h-6"
-                    />
-                    <div className="flex flex-col">
-                      <h2 className="truncate"><span> {newLink.name}</span></h2>
-                      <span className="truncate">{newLink.url}</span></div>
-                  </div>
-                )}*/}
+
+                <LinkPreview
+                  title={newLink.name}
+                  iconUrl={`https://www.google.com/s2/favicons?domain=${newLink.url}&sz=32`}
+                  url={newLink.url}
+                  isVisible={fetchedTitle}
+                  onClick={() => addLink(widget.id)}
+                />
               </div>
             ) : (
               <button
