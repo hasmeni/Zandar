@@ -452,10 +452,13 @@ export default function NavBar({ activeTab, setActiveTab }) {
 
               <button
                 onClick={() => setSearchOpen(true)}
-                className="text-gray-400 hover:text-white transition-colors p-1.5 rounded hover:bg-gray-800"
+                className="text-gray-400 hover:text-white bg-[#2A2A2C] rounded-full transition-colors py-1.5 hover:bg-neutral-800"
                 aria-label="Search"
               >
-                <Search size={18} />
+                <div className="flex items-center px-2 gap-1">
+                  <Search size={16} />
+                  <span className="text-sm">Ctrl K</span>
+                </div>
               </button>
             </div>
 
