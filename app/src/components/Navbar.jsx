@@ -437,18 +437,16 @@ export default function NavBar({ activeTab, setActiveTab }) {
 
           {/* Right side - Icons */}
           <div className="flex items-center gap-4 px-1">
-            <h2
-              className={`text-white text-sm font-sans font-bold rounded-xl px-3 py-1 ${bgType == "local" ? "shadow-[0_0_5px_rgba(255,255,255,0.3)]" : "border border-white font-instrument"}`}
-            >
-              Beta
-            </h2>
+
+            <h2>[ Beta ]</h2>
+
             <div className="flex items-center gap-2">
-              <button
+              {/* <button
                 className="text-gray-400 hover:text-white transition-colors p-1.5 rounded hover:bg-gray-800"
                 aria-label="Edit mode"
               >
                 <Edit3 size={18} />
-              </button>
+              </button>*/}
 
               <button
                 onClick={() => setSearchOpen(true)}
