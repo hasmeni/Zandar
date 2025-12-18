@@ -1,34 +1,14 @@
-import React, { useState, useEffect, useContext, useRef } from "react";
-import {
-  Menu,
-  Plus,
-  Search,
-  Settings2,
-  Pencil,
-  X,
-  Github,
-  Database,
-  Images,
-  Twitter,
-  Youtube,
-  Bot,
-  Upload,
-  Image as ImageIcon,
-  FileVideo,
-  Download,
-  FileJson,
-  Check,
-  LucideOctagonAlert,
-} from "lucide-react";
+import React, { useEffect, useContext, useRef } from "react";
 import SearchBar from "../SearchBar";
 import BackupManager from "./BackupManager.jsx";
 import { db } from "../../services/db/schema.js";
 import { SettingsContext } from "../../contexts/SettingsProvider";
 import { Broom } from "@phosphor-icons/react";
+import { X, Database, Images, Upload, Check } from "lucide-react";
 
 const PANEL_WIDTH = "360px";
 
-const SettingsPanel = ({ isOpen, onClose }) => {
+const SettingsPanel = () => {
   // const [searchQuery, setSearchQuery] = useState("");
 
   const fileInputRef = useRef(null);
@@ -47,17 +27,93 @@ const SettingsPanel = ({ isOpen, onClose }) => {
     setBgBrightness,
     widgetOpacity,
     setWidgetOpacity,
+    bgPreset,
+    setBgPreset,
+    setPresetId
   } = useContext(SettingsContext);
 
+  const BG_PRESETS = [
+    {
+      id: "glass",
+      label: "Glass",
+      type: "preset",
+      bg: "/assets/backgrounds/glass.jpg",
+      defaults: {
+        blur: 12,
+        brightness: 110,
+        widgetOpacity: 0,
+      },
+    },
+    {
+      id: "nature",
+      label: "Nature",
+      type: "preset",
+      bg: "/assets/backgrounds/nature.jpg",
+      defaults: {
+        blur: 0,
+        brightness: 120,
+        widgetOpacity: 0,
+      },
+    },
+    {
+      id: "gradient",
+      label: "Gradient",
+      type: "preset",
+      bg: "/assets/backgrounds/gradient.jpg",
+      defaults: {
+        blur: 0,
+        brightness: 100,
+        widgetOpacity: 0,
+      },
+    },
+    {
+      id: "vibrant",
+      label: "Vibrant",
+      type: "preset",
+      bg: "/assets/backgrounds/blur.jpg",
+      defaults: {
+        blur: 6,
+        brightness: 105,
+        widgetOpacity: 0,
+      },
+    },
+    {
+      id: "city",
+      label: "City",
+      type: "preset",
+      bg: "/assets/backgrounds/city.jpg",
+      defaults: {
+        blur: 18,
+        brightness: 95,
+        widgetOpacity: 0,
+      },
+    },
+  ];
+  
   useEffect(() => {
     const handleEscape = (e) => {
-      if (e.key === "Escape" && isOpen) {
-        onClose();
+      if (e.key === "Escape" && settingsOpen) {
+        setSettingsOpen(false);
       }
     };
     window.addEventListener("keydown", handleEscape);
     return () => window.removeEventListener("keydown", handleEscape);
-  }, [isOpen, onClose]);
+  }, [settingsOpen, setSettingsOpen]);
+
+  const applyPreset = (presetId) => {
+    const preset = BG_PRESETS.find((p) => p.id === presetId);
+    if (!preset) return;
+
+    setBgPreset(presetId);
+    localStorage.setItem("bgPreset", presetId);
+
+    setBgType("preset");
+    localStorage.setItem("bgType", "preset");
+    setPresetId(preset.id)
+    setBgBlur(preset.defaults.blur);
+    setBgBrightness(preset.defaults.brightness);
+    setWidgetOpacity(preset.defaults.widgetOpacity);
+  };
 
   return (
     <>
@@ -80,19 +136,22 @@ const SettingsPanel = ({ isOpen, onClose }) => {
         style={{ width: PANEL_WIDTH }}
       >
         {/* Header */}
-        <div className="sticky top-0 bg-[#161616] border-b border-neutral-700 z-20">          <div className="flex items-center justify-between px-4 py-3">
-          <div className="flex items-center justify-between py-1 w-full">
-                <h2 className="text-lg text-white font-medium tracking-wide">Settings</h2>
-                <button
-                  onClick={() => setSettingsOpen(false)}
-                  className="text-white hover:text-neutral-400 p-1.5 rounded transition-all"
-                  aria-label="Close settings"
-                >
-                  <X size={16} />
-                </button>
-              </div>
+        <div className="sticky top-0 bg-[#161616] border-b border-neutral-700 z-20">
+          {" "}
+          <div className="flex items-center justify-between px-4 py-3">
+            <div className="flex items-center justify-between py-1 w-full">
+              <h2 className="text-lg text-white font-medium tracking-wide">
+                Settings
+              </h2>
+              <button
+                onClick={() => setSettingsOpen(false)}
+                className="text-white hover:text-neutral-400 p-1.5 rounded transition-all"
+                aria-label="Close settings"
+              >
+                <X size={16} />
+              </button>
+            </div>
           </div>
-
           {/* <div className="px-4 py-2">
             <SearchBar
               // value={searchQuery}
@@ -115,7 +174,32 @@ const SettingsPanel = ({ isOpen, onClose }) => {
               <h3 className="text-base text-white">Appearance</h3>
             </div>
 
+            {/*  PRESET */}
             <div className="space-y-4 pt-4">
+              <div>
+                <div className="text-sm text-[#A4A4A4] tracking-wide mb-3">
+                  Presets
+                </div>
+
+                <div className="flex gap-3">
+                  {BG_PRESETS.map((preset) => (
+                    <button
+                      key={preset.id}
+                      onClick={() => applyPreset(preset.id)}
+                      className={`flex flex-col items-center gap-1 transition-opacity ${
+                        bgPreset === preset.id ? "opacity-100" : "opacity-60 hover:opacity-80"
+                      }`}
+                    >
+                      <div
+                        className="w-14 h-14 rounded border border-neutral-700 bg-cover bg-center"
+                        style={{ backgroundImage: `url(${preset.bg})` }}
+                      />
+                      <label className="text-xs">{preset.label}</label>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
               <div className="text-sm text-[#A4A4A4] tracking-wide">
                 Background
               </div>
@@ -132,7 +216,7 @@ const SettingsPanel = ({ isOpen, onClose }) => {
                   }`}
                 >
                   <Broom size={26} className="mb-2" />
-                  <span className="text-[13px]">Default</span>
+                  <span className="text-[13px]">Dark Mode</span>
                 </button>
 
                 <button
@@ -220,12 +304,11 @@ const SettingsPanel = ({ isOpen, onClose }) => {
             <div className="text-sm text-[#A4A4A4] tracking-wide border-t border-neutral-600 pt-4 mb-3">
               Interface Adjustments
             </div>
-            
+
             <div className="space-y-4">
               <div>
                 <p className="text-[13px] text-[#A4A4A4]">Widget</p>
                 <div className="space-y-3">
-                  
                   {/* Logic for Blur*/}
                   {/* <div className="flex items-center bg-[#1C1E1D] text-[14px] text-[@D2D1D1] border border-[#3E3D3D] rounded-md mt-2 p-2.5 px-3 w-full">
                     <span>Blur</span>
@@ -239,7 +322,7 @@ const SettingsPanel = ({ isOpen, onClose }) => {
                       className="w-full h-0.5 bg-[#D9D9D9] appearance-none cursor-pointer accent-white"
                     />
                   </div>*/}
-    
+
                   <div className="flex items-center bg-[#1C1E1D] text-[14px] text-[@D2D1D1] border border-[#3E3D3D] rounded-md mt-2 p-2.5 px-3 w-[325px]">
                     <span>Opacity</span>
                     <span className="ml-11 mr-3">{widgetOpacity}%</span>
@@ -254,7 +337,7 @@ const SettingsPanel = ({ isOpen, onClose }) => {
                   </div>
                 </div>
               </div>
-              
+
               {/* <div>
                 <p className="text-[13px] text-[#A4A4A4]">Navbar</p>
                 <div className="space-y-3">
@@ -270,7 +353,7 @@ const SettingsPanel = ({ isOpen, onClose }) => {
                       className="w-full h-0.5 bg-[#D9D9D9] appearance-none cursor-pointer accent-white"
                     />
                   </div>
-    
+
                   <div className="flex items-center bg-[#1C1E1D] text-[14px] text-[@D2D1D1] border border-[#3E3D3D] rounded-md mt-2 p-2.5 px-3 w-full">
                     <span>Opacity</span>
                     <span className="ml-14 mr-3">{widgetOpacity}%</span>
@@ -294,9 +377,8 @@ const SettingsPanel = ({ isOpen, onClose }) => {
               <h3 className="text-base text-white">Backup & Restore</h3>
             </div>
             <BackupManager />
-
           </div>
-          
+
           {/* Horizontal divider Line */}
           <div className="h-0.5 w-full rounded-full bg-[#2A2A2C]"></div>
 
