@@ -8,7 +8,7 @@ import { X, Database, Images, Upload, Check } from "lucide-react";
 
 const PANEL_WIDTH = "360px";
 
-const SettingsPanel = ({setPresetId}) => {
+const SettingsPanel = ({ setPresetId }) => {
   // const [searchQuery, setSearchQuery] = useState("");
 
   const fileInputRef = useRef(null);
@@ -29,7 +29,6 @@ const SettingsPanel = ({setPresetId}) => {
     setWidgetOpacity,
     bgPreset,
     setBgPreset,
-
   } = useContext(SettingsContext);
 
   const BG_PRESETS = [
@@ -235,69 +234,69 @@ const SettingsPanel = ({setPresetId}) => {
               </div>
 
               {bgType === "local" && (
-                <>
-                  <div className="animate-in fade-in slide-in-from-top-2 duration-300">
-                    <div
-                      onClick={() => fileInputRef.current?.click()}
-                      className="bg-[#212020] text-[#8E8E8E] border-2 border-dashed border-neutral-700 rounded-lg p-6 flex flex-col items-center justify-center text-center shadow-[0_1px_10px_rgba(0,0,0,0.4)] cursor-pointer hover:bg-neutral-900/50 hover:border-neutral-500 transition-colors group"
-                    >
-                      <Upload
-                        className="group-hover:text-neutral-300 mb-2 transition-colors"
-                        size={24}
-                      />
-                      <span className="text-sm  group-hover:text-neutral-200">
-                        Tap to upload Image/Video
-                      </span>
+                <div className="animate-in fade-in slide-in-from-top-2 duration-300">
+                  <div
+                    onClick={() => fileInputRef.current?.click()}
+                    className="bg-[#212020] text-[#8E8E8E] border-2 border-dashed border-neutral-700 rounded-lg p-6 flex flex-col items-center justify-center text-center shadow-[0_1px_10px_rgba(0,0,0,0.4)] cursor-pointer hover:bg-neutral-900/50 hover:border-neutral-500 transition-colors group"
+                  >
+                    <Upload
+                      className="group-hover:text-neutral-300 mb-2 transition-colors"
+                      size={24}
+                    />
+                    <span className="text-sm  group-hover:text-neutral-200">
+                      Tap to upload Image/Video
+                    </span>
+                    <input
+                      type="file"
+                      ref={fileInputRef}
+                      className="hidden"
+                      accept="image/*,video/*"
+                      onChange={handleFileUpload}
+                    />
+                  </div>
+                  {bgFileName && (
+                    <div className="mt-2 flex items-center gap-2 text-xs text-emerald-400 bg-emerald-400/10 p-2 rounded border border-emerald-400/20">
+                      <Check size={12} />{" "}
+                      <span className="truncate">Selected: {bgFileName}</span>
+                    </div>
+                  )}
+                </div>
+              )}
+              
+              {(bgType === "local" || bgType === "preset") && (
+                <div className="pt-2">
+                  <div className="text-sm text-[#A4A4A4] tracking-wide">
+                    Bg Adjustments
+                  </div>
+
+                  <div className="space-y-3">
+                    <div className="flex items-center bg-[#1C1E1D] text-[14px] text-[@D2D1D1] border border-[#3E3D3D] rounded-md mt-2 p-2.5 px-3 w-[325px]">
+                      <span>Blur</span>
+                      <span className="ml-16 mr-3">{bgBlur}%</span>
                       <input
-                        type="file"
-                        ref={fileInputRef}
-                        className="hidden"
-                        accept="image/*,video/*"
-                        onChange={handleFileUpload}
+                        type="range"
+                        min="0"
+                        max="20"
+                        value={bgBlur}
+                        onChange={(e) => setBgBlur(e.target.value)}
+                        className="w-full h-0.5 bg-[#D9D9D9] appearance-none cursor-pointer accent-white"
                       />
                     </div>
-                    {bgFileName && (
-                      <div className="mt-2 flex items-center gap-2 text-xs text-emerald-400 bg-emerald-400/10 p-2 rounded border border-emerald-400/20">
-                        <Check size={12} />{" "}
-                        <span className="truncate">Selected: {bgFileName}</span>
-                      </div>
-                    )}
-                  </div>
 
-                  <div className="pt-2">
-                    <div className="text-sm text-[#A4A4A4] tracking-wide">
-                      Bg Adjustments
-                    </div>
-
-                    <div className="space-y-3">
-                      <div className="flex items-center bg-[#1C1E1D] text-[14px] text-[@D2D1D1] border border-[#3E3D3D] rounded-md mt-2 p-2.5 px-3 w-[325px]">
-                        <span>Blur</span>
-                        <span className="ml-16 mr-3">{bgBlur}%</span>
-                        <input
-                          type="range"
-                          min="0"
-                          max="20"
-                          value={bgBlur}
-                          onChange={(e) => setBgBlur(e.target.value)}
-                          className="w-full h-0.5 bg-[#D9D9D9] appearance-none cursor-pointer accent-white"
-                        />
-                      </div>
-
-                      <div className="flex items-center bg-[#1C1E1D] text-[14px] text-[@D2D1D1] border border-[#3E3D3D] rounded-md mt-2 p-2.5 px-3 w-[325px]">
-                        <span>Brightness</span>
-                        <span className="ml-5 mr-3">{bgBrightness}%</span>
-                        <input
-                          type="range"
-                          min="10"
-                          max="200"
-                          value={bgBrightness}
-                          onChange={(e) => setBgBrightness(e.target.value)}
-                          className="w-full h-0.5 bg-[#D9D9D9] appearance-none cursor-pointer accent-white"
-                        />
-                      </div>
+                    <div className="flex items-center bg-[#1C1E1D] text-[14px] text-[@D2D1D1] border border-[#3E3D3D] rounded-md mt-2 p-2.5 px-3 w-[325px]">
+                      <span>Brightness</span>
+                      <span className="ml-5 mr-3">{bgBrightness}%</span>
+                      <input
+                        type="range"
+                        min="10"
+                        max="200"
+                        value={bgBrightness}
+                        onChange={(e) => setBgBrightness(e.target.value)}
+                        className="w-full h-0.5 bg-[#D9D9D9] appearance-none cursor-pointer accent-white"
+                      />
                     </div>
                   </div>
-                </>
+                </div>
               )}
             </div>
           </div>
