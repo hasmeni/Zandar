@@ -202,12 +202,12 @@ export default function NavBar({ activeTab, setActiveTab }) {
   return (
     <>
       <nav
-        className="border-gray-200"
+        className="border-gray-200 font-sans"
         style={{
-          backgroundColor: `rgba(22, 22, 22, ${Math.max(0.8, widgetOpacity / 100)})`,
+          backgroundColor: `rgba(0, 0, 0, ${Math.max(0.8, widgetOpacity / 100)})`,
         }}
       >
-        <div className="flex items-center justify-between h-12 px-4 font-sans">
+        <div className="flex items-center justify-between h-12 px-4">
           {/* Left side - Dropdown & Tabs */}
           <div className="flex items-center gap-4">
             {/* Dropdown Menu */}
@@ -267,7 +267,7 @@ export default function NavBar({ activeTab, setActiveTab }) {
                         </button>
                       </div>
                     </div>
-                    
+
                     {/* Pages List */}
                     <div className="p-2 max-h-[400px] overflow-y-auto border-t border-t-zinc-800">
                       {SortedPage.map((page, index) => {
@@ -389,7 +389,7 @@ export default function NavBar({ activeTab, setActiveTab }) {
                     {/* Footer */}
                     <div className="relative px-4 py-2.5">
                       <div className="absolute bottom-0 left-0 right-0 h-px bg-[#161616]"></div>
-                      <div className="text-center text-xs text-neutral-600 select-none">
+                      <div className="text-center text-xs text-neutral-500 select-none">
                         {pages.length} {pages.length === 1 ? "page" : "pages"}
                       </div>
                     </div>
@@ -399,7 +399,7 @@ export default function NavBar({ activeTab, setActiveTab }) {
             </div>
 
             {/* Tabs */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 font-sans">
               {SortedPage.map((page, index) => {
                 const isDragging = draggedPage?.index === index;
                 const isDropTarget =
@@ -416,11 +416,11 @@ export default function NavBar({ activeTab, setActiveTab }) {
                     onDrop={(e) => handlePageDrop(e, index)}
                     onClick={() => setActiveTab(page.uuid)}
                     className={`
-                      px-5 py-2 rounded-xl transition-all duration-200
+                      px-5 py-2 rounded-xl transition-all duration-200 text-sm
                       ${
                         activeTab === page.uuid
-                          ? "bg-white text-sm text-black font-bold"
-                          : "bg-[#2A2A2C] text-sm text-white hover:text-white shadow-[0_4px_10px_rgba(0,0,0,0.4)]"
+                          ? " bg-white text-black font-bold"
+                          : " text-white hover:text-white shadow-[0_4px_10px_rgba(0,0,0,0.4)]"
                       }
                       ${isDragging ? "opacity-30 scale-95" : "opacity-100 scale-100"}
                       ${isDropTarget ? "ring-2 ring-gray-300 scale-95" : ""}
@@ -463,7 +463,7 @@ export default function NavBar({ activeTab, setActiveTab }) {
                 aria-label="Search"
               >
                 <div className="flex items-center px-2 gap-1">
-                  <Search size={18}/>
+                  <Search size={18} />
                   <div className="flex items-center text-neutral-400 gap-0.5">
                     <Command size={11} />
                     <span className="text-sm">K</span>
@@ -495,15 +495,15 @@ export default function NavBar({ activeTab, setActiveTab }) {
       {/* New Page Dialog */}
       {newPageDialog && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50"
+          className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 font-instrument"
           onClick={() => setNewPageDialog(false)}
         >
           <div
-            className="bg-[#1a1a1a] border border-gray-700 rounded-lg shadow-2xl w-96 p-6"
+            className="bg-[#1a1a1a] border border-white/20 rounded-lg shadow-[0_1px_1px_rgba(0,0,0,0.4)] w-96 p-6"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-bold text-white">Create New Page</h2>
+            <div className="flex items-center justify-between mb-6 shadow-(0_5px_2px_rgba(0,0,0,0.4)">
+              <h2 className="text-Base text-white font-instrument">Create New Page</h2>
               <button
                 onClick={() => setNewPageDialog(false)}
                 className="text-gray-400 hover:text-white transition-colors p-1 hover:bg-gray-800 rounded"
@@ -513,10 +513,6 @@ export default function NavBar({ activeTab, setActiveTab }) {
             </div>
 
             <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Page Title
-                </label>
                 <input
                   type="text"
                   value={newPage.title}
@@ -528,20 +524,19 @@ export default function NavBar({ activeTab, setActiveTab }) {
                       addPage();
                     }
                   }}
-                  className="w-full px-4 py-2 bg-[#0e0e0e] border border-gray-700 rounded-lg text-white outline-none focus:border-gray-500 transition-all placeholder-gray-600"
+                  className="w-full px-4 py-2 bg-[#0e0e0e] border border-gray-700 rounded-lg text-white outline-none focus:border-gray-500 transition-all placeholder-neutral-500"
                 />
-              </div>
 
               <div className="flex gap-3 pt-2">
                 <button
                   onClick={() => setNewPageDialog(false)}
-                  className="flex-1 px-4 py-2 border border-gray-700 rounded-lg text-gray-300 hover:bg-gray-800 transition-colors"
+                  className="flex-1 px-4 py-2 border border-gray-700 rounded-lg text-gray-300 hover:bg-gray-800 transition-colors shadow-[0_3px_20px_rgba(0,0,0,0.5)]"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={addPage}
-                  className="flex-1 px-4 py-2 bg-white text-black rounded-lg hover:bg-gray-200 transition-colors font-medium"
+                  className="flex-1 px-4 py-2 bg-white text-black rounded-lg hover:bg-gray-200 transition-colors font-medium shadow-[0_3px_20px_rgba(0,0,0,0.5)]  "
                 >
                   Create
                 </button>
