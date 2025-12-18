@@ -8,7 +8,7 @@ import { X, Database, Images, Upload, Check } from "lucide-react";
 
 const PANEL_WIDTH = "360px";
 
-const SettingsPanel = () => {
+const SettingsPanel = ({setPresetId}) => {
   // const [searchQuery, setSearchQuery] = useState("");
 
   const fileInputRef = useRef(null);
@@ -29,7 +29,7 @@ const SettingsPanel = () => {
     setWidgetOpacity,
     bgPreset,
     setBgPreset,
-    setPresetId
+
   } = useContext(SettingsContext);
 
   const BG_PRESETS = [
@@ -50,7 +50,7 @@ const SettingsPanel = () => {
       type: "preset",
       bg: "/assets/backgrounds/nature.jpg",
       defaults: {
-        blur: 0,
+        blur: 40,
         brightness: 120,
         widgetOpacity: 0,
       },
@@ -89,7 +89,7 @@ const SettingsPanel = () => {
       },
     },
   ];
-  
+
   useEffect(() => {
     const handleEscape = (e) => {
       if (e.key === "Escape" && settingsOpen) {
@@ -109,7 +109,7 @@ const SettingsPanel = () => {
 
     setBgType("preset");
     localStorage.setItem("bgType", "preset");
-    setPresetId(preset.id)
+    setPresetId(preset.id);
     setBgBlur(preset.defaults.blur);
     setBgBrightness(preset.defaults.brightness);
     setWidgetOpacity(preset.defaults.widgetOpacity);
@@ -187,7 +187,9 @@ const SettingsPanel = () => {
                       key={preset.id}
                       onClick={() => applyPreset(preset.id)}
                       className={`flex flex-col items-center gap-1 transition-opacity ${
-                        bgPreset === preset.id ? "opacity-100" : "opacity-60 hover:opacity-80"
+                        bgPreset === preset.id
+                          ? "opacity-100"
+                          : "opacity-60 hover:opacity-80"
                       }`}
                     >
                       <div
