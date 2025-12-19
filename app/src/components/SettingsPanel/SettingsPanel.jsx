@@ -139,14 +139,11 @@ const SettingsPanel = ({ setPresetId }) => {
           {/* Header */}
           <div className="flex items-center justify-between px-4 py-3 select-none">
             <div className="flex items-center justify-between w-full">
-              <div className="flex gap-4">
+              <div className="flex items-center gap-4">
                 <h2 className="text-lg text-white font-medium tracking-wide">
-                  Zandar
-                </h2>
+                  Zandar <span className="text-xs">v0.1.0</span>
 
-                <div className="hidden sm:flex text-sm font-bold items-center gap-0.5 bg-[#808080] text-black shadow-[0_2px_1px_rgba(0,0,0,0.5),0_1px_5px_rgba(0,0,0,0.4)] px-1 rounded-md">
-                  v0.1.0
-                </div>
+                </h2>
               </div>
               <button
                 onClick={() => setSettingsOpen(false)}
