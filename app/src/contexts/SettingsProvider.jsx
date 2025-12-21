@@ -4,6 +4,7 @@ import { saveImage } from "../services/db/imageStore.js";
 export const SettingsContext = createContext();
 
 export const SettingsProvider = ({ children }) => {
+  // const [light, setLight] = useState(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [bgType, setBgType] = useState("default");
   const [bgFile, setBgFile] = useState(null);

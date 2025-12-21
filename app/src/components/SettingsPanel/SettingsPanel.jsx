@@ -5,7 +5,7 @@ import BackupManager from "./BackupManager.jsx";
 import { db } from "../../services/db/schema.js";
 import { SettingsContext } from "../../contexts/SettingsProvider";
 import { Broom } from "@phosphor-icons/react";
-import { X, Database, Images, Upload, Check, Command } from "lucide-react";
+import { X, Database, Images, Upload, Check, Command, Moon, Sun } from "lucide-react";
 
 const PANEL_WIDTH_MOBILE = "100vw";
 const PANEL_WIDTH_DESKTOP = "360px";
@@ -101,6 +101,20 @@ const SettingsPanel = ({ setPresetId, setCardDismissal }) => {
     window.addEventListener("keydown", handleEscape);
     return () => window.removeEventListener("keydown", handleEscape);
   }, [settingsOpen, setSettingsOpen]);
+  
+  const handleReset = async () => {
+    if (confirm("Delete all data and reset? :)")) {
+      await db.delete();
+      
+      const keys = ["bgBlur", "bgBrightness", "bgPreset", "bgIsVideo", "bgImageKey", "bgType" ,"cardDismissal", "started", "widgetOpacity"]
+      
+      keys.map((key) => {
+        localStorage.removeItem(key)
+        // console.log(key)
+      })
+      window.location.reload();
+    }
+  }
 
   const applyPreset = (presetId) => {
     const preset = BG_PRESETS.find((p) => p.id === presetId);
@@ -177,8 +191,8 @@ const SettingsPanel = ({ setPresetId, setCardDismissal }) => {
               <h3 className="text-base text-white">Appearance</h3>
             </div>
 
-            {/*  PRESET */}
             <div className="space-y-4 pt-4">
+              {/*  PRESET */}
               <div>
                 <div className="text-sm text-[#A4A4A4] tracking-wide mb-3">
                   Presets
@@ -309,44 +323,50 @@ const SettingsPanel = ({ setPresetId, setCardDismissal }) => {
           </div>
 
           <div>
-            <div className="text-sm text-[#A4A4A4] tracking-wide border-t border-neutral-600 pt-4 mb-3">
-              Interface Adjustments
+            <div className="flex border-t border-neutral-600 pt-4 gap-5"> 
+              <div className="text-sm text-[#A4A4A4] tracking-wide  mb-3">
+                Interface Adjustments
+              </div>
+              {/* <div className="flex gap-3">
+                <Moon size={20}/>
+                <Sun size={21}/>
+              </div>*/}
             </div>
 
             <div className="space-y-4">
               <div>
-                <p className="text-[13px] text-[#A4A4A4]">Widget</p>
-                <div className="space-y-3">
-                  {/* Logic for Blur*/}
-                  {/* <div className="flex items-center bg-[#1C1E1D] text-[14px] text-[@D2D1D1] border border-[#3E3D3D] rounded-md mt-2 p-2.5 px-3 w-full">
-                    <span>Blur</span>
-                    <span className="ml-14 mr-3">{bgBlur}%</span>
-                    <input
-                      type="range"
-                      min="0"
-                      max="20"
-                      value={bgBlur}
-                      onChange={(e) => setBgBlur(e.target.value)}
-                      className="w-full h-0.5 bg-[#D9D9D9] appearance-none cursor-pointer accent-white"
-                    />
-                  </div>*/}
-
-                  <div className="flex items-center bg-[#1C1E1D] text-xs sm:text-[14px] text-[@D2D1D1] border border-[#3E3D3D] rounded-md mt-2 p-2 sm:p-2.5 px-2 sm:px-3 w-full">
-                    <span className="flex-shrink-0">Opacity</span>
-                    <span className="ml-11 mr-2 sm:mr-3 flex-shrink-0">
-                      {widgetOpacity}%
-                    </span>
-                    <input
-                      type="range"
-                      min="20"
-                      max="100"
-                      value={widgetOpacity}
-                      onChange={(e) => setWidgetOpacity(e.target.value)}
-                      className="flex-1 h-0.5 bg-[#D9D9D9] appearance-none cursor-pointer accent-white"
-                    />
+                  <p className="text-[13px] text-[#A4A4A4]">Widget</p>
+                  <div className="space-y-3">
+                    {/* Logic for Blur*/}
+                    {/* <div className="flex items-center bg-[#1C1E1D] text-[14px] text-[@D2D1D1] border border-[#3E3D3D] rounded-md mt-2 p-2.5 px-3 w-full">
+                      <span>Blur</span>
+                      <span className="ml-14 mr-3">{bgBlur}%</span>
+                      <input
+                        type="range"
+                        min="0"
+                        max="20"
+                        value={bgBlur}
+                        onChange={(e) => setBgBlur(e.target.value)}
+                        className="w-full h-0.5 bg-[#D9D9D9] appearance-none cursor-pointer accent-white"
+                      />
+                    </div>*/}
+  
+                    <div className="flex items-center bg-[#1C1E1D] text-xs sm:text-[14px] text-[@D2D1D1] border border-[#3E3D3D] rounded-md mt-2 p-2 sm:p-2.5 px-2 sm:px-3 w-full">
+                      <span className="flex-shrink-0">Opacity</span>
+                      <span className="ml-11 mr-2 sm:mr-3 flex-shrink-0">
+                        {widgetOpacity}%
+                      </span>
+                      <input
+                        type="range"
+                        min="20"
+                        max="100"
+                        value={widgetOpacity}
+                        onChange={(e) => setWidgetOpacity(e.target.value)}
+                        className="flex-1 h-0.5 bg-[#D9D9D9] appearance-none cursor-pointer accent-white"
+                      />
+                    </div>
                   </div>
                 </div>
-              </div>
 
               {/* <div>
                 <p className="text-[13px] text-[#A4A4A4]">Navbar</p>
@@ -419,12 +439,7 @@ const SettingsPanel = ({ setPresetId, setCardDismissal }) => {
           <button
             aria-label="Reset"
             className="w-full font-instrument p-3 bg-red-600 rounded hover:bg-red-700 transition-colors"
-            onClick={async () => {
-              if (confirm("Delete all data and reset? :)")) {
-                await db.delete();
-                window.location.reload();
-              }
-            }}
+            onClick={handleReset}
           >
             Reset
           </button>

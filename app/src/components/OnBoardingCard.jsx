@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import { X, MoveRight, Github } from "lucide-react";
 import { Navigate, useNavigate } from "react-router-dom";
+import ImageSpheres from "./ImageSphere";
 
-const OnBoardingCard = ({ cardDismissal, setCardDismissal }) => {
+const OnBoardingCard = ({ cardDismissal, setCardDismissal, setStarted , setPresetId}) => {
   const navigate = useNavigate();
 
   return (
@@ -56,7 +57,7 @@ const OnBoardingCard = ({ cardDismissal, setCardDismissal }) => {
         {/* --- Main Content Section --- */}
         <div className="flex-1 flex flex-col items-center justify-center ">
           {/* Description Text - Serif Font */}
-          <p className="font-serif text-black/90 md:text-2xl text-xl text-center -translate-y-28 max-w-2xl leading-snug tracking-wide">
+          <p className="font-serif text-black/90 md:text-2xl text-xl text-center -translate-y-16 max-w-2xl leading-snug tracking-wide">
             Local • Privacy-first • Customizable <br />
             browser startpage
           </p>
@@ -66,6 +67,7 @@ const OnBoardingCard = ({ cardDismissal, setCardDismissal }) => {
             onClick={() => {
               setCardDismissal(true);
               navigate("/");
+              setStarted(true);
             }}
             className="mt-12 bg-black p-1.5 pl-1.5 pr-6 rounded-full inline-flex items-center gap-4 active:scale-95 cursor-pointer hover:scale-105 hover:shadow-[0_2px_10px_rgba(0,0,0,0.4)] transition-transform duration-300 -translate-y-12 md:-translate-y-0"
           >
@@ -84,6 +86,10 @@ const OnBoardingCard = ({ cardDismissal, setCardDismissal }) => {
             <MoveRight className="text-white" size={30} strokeWidth={1.5} />
           </div>
         </div>
+        
+        <div>
+          <ImageSpheres setPresetId={setPresetId}  />
+        </div>
 
         {/* --- Footer Section --- */}
         <div className="relative flex items-end justify-between w-full h-10">
@@ -100,11 +106,9 @@ const OnBoardingCard = ({ cardDismissal, setCardDismissal }) => {
               fill="none"
               className="active:scale-95"
             />
-            {/* Note: The image icon is unique, 'Wine' from lucide is the closest generic match.
-                 For exact match, you'd use a custom SVG here. */}
           </a>
 
-          {/* <p className="text-xs font-instrument translate-y-5 text-slate-900 select-none">Customize anytime from Settings</p>*/}
+          <p className="text-xs font-instrument translate-y-5 text-slate-900 select-none">Customize anytime from Settings</p>
 
           {/* Centered "about" text */}
           {/* absolute left-1/2 */}

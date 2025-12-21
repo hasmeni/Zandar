@@ -13,7 +13,8 @@ import About from "./components/About";
 function App() {
   const [activePage, setActivePage] = useState("");
   const [presetId, setPresetId] = useState("");
-  
+  const [started, setStarted] = useState(false);
+
   // Initialize cardDismissal from localStorage
   const [cardDismissal, setCardDismissal] = useState(() => {
     const saved = localStorage.getItem("cardDismissal");
@@ -24,15 +25,23 @@ function App() {
   useEffect(() => {
     localStorage.setItem("cardDismissal", JSON.stringify(cardDismissal));
   }, [cardDismissal]);
+  useEffect(() => {
+    localStorage.setItem("started", JSON.stringify(started));
+  }, [started]);
 
   return (
     <>
-      {!cardDismissal && (
-        <div className="fixed inset-0 z-50">
-          <OnBoardingCard cardDismissal={cardDismissal} setCardDismissal={setCardDismissal} />
-        </div>
-      )}
       <SettingsProvider>
+        {!cardDismissal && (
+          <div className="fixed inset-0 z-50">
+            <OnBoardingCard
+              cardDismissal={cardDismissal}
+              setCardDismissal={setCardDismissal}
+              setStarted={setStarted}
+              setPresetId={setPresetId}
+            />
+          </div>
+        )}
         <div
           className="relative w-screen h-screen overflow-hidden text-gray-200 font-sans selection:bg-purple-500/30"
 
@@ -56,11 +65,31 @@ function App() {
           >
             {/* <Navbar activeTab={activePage} setActiveTab={setActivePage} />*/}
             <Routes>
-              <Route path="/" element={<Dashboard activePage={activePage} setActivePage={setActivePage} />} />
-              <Route path="/about" element={<About />} />
+              <Route
+                path="/"
+                element={
+                  <Dashboard
+                    activePage={activePage}
+                    setActivePage={setActivePage}
+                  />
+                }
+              />
+              <Route
+                path="/about"
+                element={
+                  <About
+                    setPresetId={setPresetId}
+                    setCardDismissal={setCardDismissal}
+                    started={started}
+                  />
+                }
+              />
             </Routes>
           </div>
-          <SettingsPanel setPresetId={setPresetId} setCardDismissal={setCardDismissal}  />
+          <SettingsPanel
+            setPresetId={setPresetId}
+            setCardDismissal={setCardDismissal}
+          />
         </div>
       </SettingsProvider>
     </>
