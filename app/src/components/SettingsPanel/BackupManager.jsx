@@ -107,7 +107,7 @@ const BackupManager = () => {
           className="w-full flex items-center justify-center gap-1.5 bg-white text-black px-2 sm:px-2.5 py-1.5 sm:py-2 rounded-lg text-xs font-medium hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <Download size={12} className="sm:w-[14px] sm:h-[14px]" />
-          <span className="text-xs">{isExporting ? "Exporting..." : "Export Backup"}</span>
+          <span className="text-xs py-0.5">{isExporting ? "Exporting..." : "Export Backup"}</span>
         </button>
 
         <button
@@ -116,7 +116,7 @@ const BackupManager = () => {
           className="w-full flex items-center justify-center gap-1.5 bg-white text-black px-2 sm:px-2.5 py-1.5 sm:py-2 rounded-lg text-xs font-medium hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <Upload size={12} className="sm:w-[14px] sm:h-[14px]" />
-          <span className="text-xs">{isImporting ? "Importing..." : "Import Backup"}</span>
+          <span className="text-xs py-0.5">{isImporting ? "Importing..." : "Import Backup"}</span>
         </button>
 
         {/* file imporrt */}

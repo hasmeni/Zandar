@@ -416,7 +416,7 @@ const SettingsPanel = ({ setPresetId, setCardDismissal }) => {
           <div className="flex justify-center gap-4">
             <button
               aria-label="Reset"
-              className="w-full font-instrument p-3 text-black bg-neutral-300 rounded hover:bg-neutral-400 transition-colors active:scale-95"
+              className="w-full font-instrument px-2 py-1.5 text-black bg-neutral-300 rounded hover:bg-neutral-400 transition-colors active:scale-95"
               onClick={() => {
                 navigate("/about");
                 setSettingsOpen(false);
@@ -426,7 +426,7 @@ const SettingsPanel = ({ setPresetId, setCardDismissal }) => {
             </button>
             <button
               aria-label="Reset"
-              className="w-full font-sans p-3 text-black bg-neutral-300 rounded hover:bg-neutral-400 transition-colors active:scale-95"
+              className="w-full font-sans px-2 py-1.5 text-black bg-neutral-300 rounded hover:bg-neutral-400 transition-colors active:scale-95"
               onClick={() => {
                 setCardDismissal(false);
                 setSettingsOpen(false);
