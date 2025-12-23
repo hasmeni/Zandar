@@ -29,7 +29,7 @@ const AboutPage = ({ setCardDismissal, started }) => {
         textAccent: "text-zinc-400",
         cardBg: "bg-zinc-900/50 border-zinc-800",
         badge: "bg-zinc-900 border-zinc-800 text-zinc-400",
-        backBtn: "text-zinc-500 hover:text-zinc-300 hover:bg-zinc-900",
+        backBtn: "text-zinc-400 hover:text-zinc-300 hover:bg-zinc-900",
         divider: "border-zinc-900",
         iconColor: "text-zinc-400",
         toggleBtn: "bg-zinc-900 text-zinc-400 hover:text-white",
@@ -73,7 +73,7 @@ const AboutPage = ({ setCardDismissal, started }) => {
           className="group-hover:-translate-x-1 transition-transform"
         />
         <span className="hidden md:inline animate-pulse">
-          Back to dashboard
+          Back to Workspace
         </span>
       </div>
 
@@ -87,7 +87,7 @@ const AboutPage = ({ setCardDismissal, started }) => {
       </button>
 
       {/* --- MAIN CONTENT --- */}
-      <div className="w-full max-w-2xl space-y-12 mt-12 md:mt-0">
+      <div className="w-full max-w-2xl space-y-12 mt-12 md:mt-16">
         {/* IDENTITY SECTION */}
         <div className="space-y-4 text-center">
           <div
@@ -109,9 +109,10 @@ const AboutPage = ({ setCardDismissal, started }) => {
           </h1>
 
           <p
-            className={`text-2xl font-serif max-w-[1000px] mx-auto transition-colors duration-300 ${theme.textSub}`}
+            className={`text-2xl font-serif max-w-[1000px] mx-auto transition-colors duration-300 tracking-wide ${theme.textSub}`}
           >
             Zandar is a customizable, local & privacy-first browser startpage built to replace your boring new tab with a focused, productive workspace.
+            <p className="font-sans text-base mt-5">Use it as a browser homepage, new tab, or a simple bookmark dashboard</p>
           </p>
           
           {/* Action Buttons Row */}
@@ -186,7 +187,7 @@ const AboutPage = ({ setCardDismissal, started }) => {
           <div className="space-y-6">
             <div className={`flex items-center gap-2 font-bold text-xl transition-colors duration-300 ${theme.textMain}`}>
               <Map size={20} className="text-purple-500" />
-              <h2>Roadmap</h2>
+              <h2>What's Coming</h2>
             </div>
             <ul className="space-y-4">
               <RoadmapItem
@@ -244,7 +245,7 @@ const FeatureItem = ({ title, desc, theme }) => (
       {title}
     </span>
     <span
-      className={`text-xs font-medium transition-colors duration-300 ${theme.textSub}`}
+      className={`text-[13px] font-medium transition-colors duration-300 ${theme.textSub}`}
     >
       {desc}
     </span>
@@ -252,14 +253,14 @@ const FeatureItem = ({ title, desc, theme }) => (
 );
 
 const RoadmapItem = ({ title, desc, theme }) => (
-  <li className="group flex flex-col gap-0.5 opacity-60 hover:opacity-100 transition-opacity">
+  <li className="group flex flex-col gap-0.5 opacity-90 hover:opacity-100 transition-opacity">
     <span
       className={`text-sm font-bold transition-colors duration-300 group-hover:text-purple-500 ${theme.textMain}`}
     >
       {title}
     </span>
     <span
-      className={`text-xs font-medium transition-colors duration-300 ${theme.textSub}`}
+      className={`text-[13px] font-medium transition-colors duration-300 ${theme.textSub}`}
     >
       {desc}
     </span>
