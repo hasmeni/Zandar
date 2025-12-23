@@ -143,7 +143,7 @@ const AboutPage = ({ setCardDismissal, started }) => {
         <hr className={`transition-colors duration-300 ${theme.divider}`} />
 
         {/* GRID SECTION */}
-        <div className="grid md:grid-cols-2 gap-10">
+        <div className="grid md:grid-cols-2 gap-14">
           {/* What's New */}
           <div className="space-y-6">
             <div
@@ -157,18 +157,23 @@ const AboutPage = ({ setCardDismissal, started }) => {
             <ul className="space-y-4">
               <FeatureItem
                 theme={theme}
-                title="Drag & Drop Layout"
-                desc="Complete control over your grid."
+                title="Fast Local Search"
+                desc="Instantly find links and tools as you type — fully local"
               />
               <FeatureItem
                 theme={theme}
                 title="Local-First Storage"
-                desc="No login. Data stays on device."
+                desc="No login. Data stays on device - no cloud, no tracking."
               />
               <FeatureItem
                 theme={theme}
                 title="Auto-Fetch Titles"
                 desc="Instantly retrieve page titles from URLs so you never have to type them manually."
+              />
+              <FeatureItem
+                theme={theme}
+                title="Drag & Drop Layout"
+                desc="Complete control over your grid."
               />
               <FeatureItem
                 theme={theme}
