@@ -1,7 +1,7 @@
 import { db } from "./schema";
 
 // Export Configuration
-const BACKUP_VERSION = "1.0.0";
+const BACKUP_VERSION = "0.1.0";
 const FILE_PREFIX = "zandar-backup";
 const DATE_FORMAT_OPTIONS = {
   year: "numeric",

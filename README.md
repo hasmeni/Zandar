@@ -1,14 +1,19 @@
-# Zandar  
-*A local-first, privacy-focused & highly customizable browser startpage*
+# Zandar 
+
+***A local-first, privacy-focused & highly customizable browser startpage***
 
 ![Zandar preview](images/preview.png)
 *(New tab view showing the dashboard)*
+
+
+![Settings Preview](images/two.png)
+*(Settings Preview)*
 
 It works offline, stores everything locally, and doesn’t require login. You can use it as a new tab, homepage, or a simple bookmark manager. Still early, but usable.
 
 ---
 
-## Features (current MVP)
+## Features (current MVP):
 
 - Local-first storage (IndexedDB + browser localstorage)
 - No login or account required
@@ -23,9 +28,9 @@ It works offline, stores everything locally, and doesn’t require login. You ca
 
 ---
 
-## Working on
+## Working on:
 
-- Browser extension support (new tab override + quick save)
+- Browser extension support (new tab override + Quick save)
 - More widget types
 - Code cleanup and refactor
 
@@ -38,6 +43,8 @@ This project works as intended, but the **codebase is messy**.
 I’m actively using it, but a proper refactor is in progress. Some parts evolved quickly during experimentation and haven’t been cleaned up yet.
 
 If you’re browsing the code and things look rough, that’s fair. Cleanup is ongoing.
+
+*Also This is my first time managing an open-source project, so suggestions and improvements are very welcome.*
 
 ---
 
