@@ -1,0 +1,11 @@
+  // Just a workaround for newtab override
+{
+  "manifest_version": 3,
+  "name": "Zandar",
+  "description": "A calm, local-first startpage for your new tab",
+  "version": "0.1.0",
+  "chrome_url_overrides": {
+    "newtab": "newtab.html"
+  },
+  "permissions": []
+}
