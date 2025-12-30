@@ -14,7 +14,6 @@ function App() {
   const [started, setStarted] = useState(false);
   const [previewPreset, setPreviewPreset] = useState(null);
 
-
   // Initialize cardDismissal from localStorage
   const [cardDismissal, setCardDismissal] = useState(() => {
     const saved = localStorage.getItem("cardDismissal");
@@ -30,18 +29,17 @@ function App() {
   }, [started]);
 
   return (
-    <> 
+    <>
       <SettingsProvider>
         <div className="relative w-screen h-screen overflow-hidden text-gray-200 font-sans selection:bg-purple-500/30">
-      
           {/* Background */}
           <BackgroundWrapper previewPreset={previewPreset} />
-      
+
           {/* MAIN APP LAYER */}
           <div
             className="relative z-10 flex flex-col h-full min-h-0 transition-all duration-300 ease-out"
             style={
-              presetId === "glass" || presetId === "gradient"
+              presetId === "glass" || presetId === "abstract"
                 ? {
                     background: "rgba(255,255,255,0)",
                     backdropFilter: "blur(20px)",
@@ -56,9 +54,11 @@ function App() {
                   <div
                     className={`
                       absolute inset-0 transition-all duration-300 ease-out
-                      ${cardDismissal
-                        ? "opacity-100 translate-y-0"
-                        : "opacity-0 translate-y-2 pointer-events-none"}
+                      ${
+                        cardDismissal
+                          ? "opacity-100 translate-y-0"
+                          : "opacity-0 translate-y-2 pointer-events-none"
+                      }
                     `}
                   >
                     <Dashboard
@@ -68,7 +68,7 @@ function App() {
                   </div>
                 }
               />
-      
+
               <Route
                 path="/about"
                 element={
@@ -81,14 +81,16 @@ function App() {
               />
             </Routes>
           </div>
-      
+
           {/* ONBOARDING OVERLAY */}
           <div
             className={`
               fixed inset-0 z-50 transition-all duration-300 ease-out
-              ${cardDismissal
-                ? "opacity-0 scale-[0.98] pointer-events-none"
-                : "opacity-100 scale-100"}
+              ${
+                cardDismissal
+                  ? "opacity-0 scale-[0.98] pointer-events-none"
+                  : "opacity-100 scale-100"
+              }
             `}
           >
             <OnBoardingCard
@@ -99,7 +101,7 @@ function App() {
               setPreviewPreset={setPreviewPreset}
             />
           </div>
-      
+
           {/* SETTINGS */}
           <SettingsPanel
             setPresetId={setPresetId}

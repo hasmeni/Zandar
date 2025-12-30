@@ -39,7 +39,7 @@ export const BG_PRESETS: ReadonlyArray<BackgroundPreset> = [
     id: "abstract",
     label: "Abstract",
     type: "preset",
-    bg: "/assets/backgrounds/gradient.jpg",
+    bg: "/assets/backgrounds/abstract.jpg",
     defaults: {
       blur: 11,
       brightness: 100,
