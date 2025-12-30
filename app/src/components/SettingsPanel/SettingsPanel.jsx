@@ -2,7 +2,7 @@ import React, { useEffect, useContext, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import SearchBar from "../SearchBar";
 import BackupManager from "./BackupManager.jsx";
-import { db } from "../../core/db/schema.js";
+import { db } from "../../core/db/db";
 import { SettingsContext } from "../../contexts/SettingsProvider";
 import { Broom } from "@phosphor-icons/react";
 import { X, Database, Images, Upload, Check, Command, Moon, Sun } from "lucide-react";

@@ -1,8 +1,38 @@
-import { db } from "../db/schema";
+import { db, Page, Widget, Link } from "../db/db";
 import { BACKUP_VERSION, FILE_PREFIX, DATE_FORMAT_OPTIONS } from "../../constants/backup";
 
+interface DatabaseData {
+  pages: Page[];
+  widgets: Widget[];
+  links: Link[];
+}
+
+interface BackupMetadata {
+  totalPages: number;
+  totalWidgets: number;
+  totalLinks: number;
+}
+
+interface BackupJSON {
+  version: string;
+  timestamp: string;
+  appName: "Zandar";
+  data: DatabaseData;
+  metadata: BackupMetadata;
+}
+
+// Return type for the UI to know what happened
+export type ExportResult = {
+  success: true; 
+  filename: string; 
+  metadata: BackupMetadata 
+} | { 
+  success: false; 
+  error: string 
+};
+  
 // Generate Timestamp for filename
-const generateTimestamp = () => {
+const generateTimestamp = (): string => {
   const now = new Date();
   return now
     .toLocaleString("en-US", DATE_FORMAT_OPTIONS) // Format Date
@@ -10,7 +40,7 @@ const generateTimestamp = () => {
 };
 
 // Generate Backup Filename
-const generateBackupFilename = () => {
+const generateBackupFilename = (): string => {
   const timestamp = generateTimestamp();
   return `${FILE_PREFIX}-${timestamp}.json`;
 };
@@ -20,7 +50,7 @@ const generateBackupFilename = () => {
 // WRAPPED IN TRANSACTION: Ensures a consistent snapshot ("Point-in-time")
 // returns promise which gets resolved when the transction has commited. -> gets resolved with return value of the callback.
 // if transaction fail's or aborted the promise will reject. :)
-const fetchAllDatabaseData = () => {
+const fetchAllDatabaseData = (): Promise<DatabaseData> => {
   // 'r' -> Read Only transaction
   return db.transaction("r", [db.pages, db.widgets, db.links], async () => {
     const [pages, widgets, links] = await Promise.all([
@@ -35,7 +65,7 @@ const fetchAllDatabaseData = () => {
 
 // Backup JSON format
 // Create backup object with metadata
-const createBackupObject = (data) => {
+const createBackupObject = (data: DatabaseData): BackupJSON => {
   return {
     version: BACKUP_VERSION,
     timestamp: new Date().toISOString(),
@@ -54,13 +84,13 @@ const createBackupObject = (data) => {
 };
 
 // Convert object to JSON blob
-const createJsonBlob = (data) => {
+const createJsonBlob = (data: BackupJSON): Blob => {
   const jsonString = JSON.stringify(data, null, 2);
   return new Blob([jsonString], { type: "application/json" });
 };
 
 // Trigger file download in browser
-const triggerDownload = (blob, filename) => {
+const triggerDownload = (blob: Blob, filename: string): void => {
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = url;
@@ -72,7 +102,7 @@ const triggerDownload = (blob, filename) => {
 };
 
 // Export all database data to JSON file
-export const exportDatabase = async () => {
+export const exportDatabase = async (): Promise<ExportResult> => {
   try {
     const databaseData = await fetchAllDatabaseData();
     const backupObject = createBackupObject(databaseData);
@@ -87,16 +117,25 @@ export const exportDatabase = async () => {
       metadata: backupObject.metadata,
     };
   } catch (error) { 
-    console.error("Export failed:", error);
+    // standard TS way to handle unknown erorrs
+    const errorMessage = error instanceof Error ? error.message : "Unknown export error";
+    console.error("Export failed:", errorMessage);
     return {
       success: false,
-      error: error.message,
+      error: errorMessage,
     };
   }
 };
 
+export interface DatabaseStats {
+  pages: number;
+  widgets: number;
+  links: number;
+  total: number;
+}
+
 // Get current database statistics
-export const getDatabaseStats = async () => {
+export const getDatabaseStats = async (): Promise<DatabaseStats | null> => {
   try {
     const [pagesCount, widgetsCount, linksCount] = await Promise.all([
       db.pages.count(),
@@ -110,14 +149,17 @@ export const getDatabaseStats = async () => {
       links: linksCount,
       total: pagesCount + widgetsCount + linksCount,
     };
-  } catch (error) {
-    console.error("Failed to get stats:", error);
+  } catch (error) { // gives variable of type `Unknown`
+    // `console.error` accepts anything ( any ) even `Unknown`
+    // Still for safety
+    const errorMessage = error instanceof Error ? error.message : "Unknown export error";
+    console.error("Export failed:", errorMessage);
     return null;
   }
 };
 
 // Create a quick backup snapshot
-export const createBackupSnapshot = async () => {
+export const createBackupSnapshot = async (): Promise<BackupJSON> => {
   try {
     const data = await fetchAllDatabaseData();
     return createBackupObject(data);

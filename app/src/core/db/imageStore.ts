@@ -1,4 +1,4 @@
-import {db} from "./schema";
+import {db} from "./db";
 
 // dexie handles transactions automatically :).
 // These thing in muli-comment is JSDoc.

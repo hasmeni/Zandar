@@ -1,16 +1,44 @@
-import { db } from "../db/schema";
-import { BACKUP_VERSION, FILE_PREFIX, DATE_FORMAT_OPTIONS } from "../../constants/backup";
+import { db, Page, Widget, Link } from "../db/db";
+import { BACKUP_VERSION } from "../../constants/backup";
+
+interface BackupData {
+  pages: Page[];
+  widgets: Widget[];
+  links: Link[];
+}
+
+interface BackupJSON {
+  version: string;
+  timestamp: string;
+  data: BackupData;
+}
+
+// Return types for the UI
+export interface ImportStats {
+  pagesImported: number;
+  widgetsImported: number;
+  linksImported: number;
+}
+
+export type ImportResult =
+  | { success: true; stats: ImportStats; backupVersion: string; backupTimestamp: string }
+  | { success: false; error: string };
 
 // Validate backup file structure
-const validateBackupStructure = (backup) => {
-  if (!backup.version || !backup.data) {
+const validateBackupStructure = (backup: any): boolean => {
+  if (!backup.version || typeof backup !== "object") {
     return false;
   }
-  
-  if ( backup.version !== BACKUP_VERSION ) {
-    throw new Error("Incompatible backup version");
+
+  if (backup.version !== BACKUP_VERSION) {
+    throw new Error(`Incompatible backup version. Expected ${BACKUP_VERSION}, got ${backup.version}`);  
   }
 
+  // ensure 'data' exists and has array for all object
+  const hasData = backup.data && typeof backup.data === "object";
+  if (!hasData) return false;
+  
+  /// 
   const hasRequiredTables =
     Array.isArray(backup.data.pages) &&
     Array.isArray(backup.data.widgets) &&
@@ -20,29 +48,33 @@ const validateBackupStructure = (backup) => {
 };
 
 // Parse JSON file content
-const parseJsonFile = (file) => {
+const parseJsonFile = (file: File): Promise<any> => {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
 
     reader.onload = (event) => {
       try {
-        const parsed = JSON.parse(event.target.result);
+        const result = event.target?.result;
+        if ( typeof result !== 'string') {
+          throw new Error("File content is not text")
+        }
+        const parsed = JSON.parse(result);
         resolve(parsed);
       } catch (error) {
-        reject(new Error("Invalid JSON file", error));
+        // pass the error up
+        reject(error);      
       }
     };
 
     reader.onerror = () => {
       reject(new Error("Failed to read file"));
     };
-
     reader.readAsText(file);
   });
 };
 
 // Import database from JSON file
-export const importDatabase = async (file, clearExisting = true) => {
+export const importDatabase = async (file: File, clearExisting: boolean = true): Promise<ImportResult> => {
   try {
     // 1. Validate file type
     if (!file.name.endsWith(".json")) {
@@ -52,12 +84,13 @@ export const importDatabase = async (file, clearExisting = true) => {
     // 2. Parse file
     const backupData = await parseJsonFile(file);
 
-    // 3. Validate structure
+    // 3. Validate structure ( checks version and table arrays )
     if (!validateBackupStructure(backupData)) {
       throw new Error("Invalid backup file format");
     }
 
-    const { pages, widgets, links } = backupData.data;
+    const validData = backupData as BackupJSON;
+    const { pages, widgets, links } = validData.data;
 
     // 4. THE TRANSACTION (The Safety Net)
     // 'rw' = ReadWrite transaction.
@@ -67,7 +100,7 @@ export const importDatabase = async (file, clearExisting = true) => {
       [db.pages, db.widgets, db.links],
       async () => {
         // A. Clear existing (if requested) default true
-        // Wipe before importing ( merge could take some extra steps will try do it later. )
+        // Wipe before importing ( merge could take some extra steps will try do it later version. )
         if (clearExisting) {
           await Promise.all([
             db.pages.clear(),
@@ -87,7 +120,7 @@ export const importDatabase = async (file, clearExisting = true) => {
           widgetsImported: widgets.length,
           linksImported: links.length,
         };
-      }
+      },
     );
 
     return {
@@ -97,11 +130,13 @@ export const importDatabase = async (file, clearExisting = true) => {
       backupTimestamp: backupData.timestamp,
     };
   } catch (error) {
-    console.error("Import failed:", error);
-    // The DB is still safe and untouched here because of the transaction!
+    // Standard error handling
+    const errorMessage = error instanceof Error ? error.message : "Unknown import error";
+    console.error("Import failed:", errorMessage);    
+    
     return {
       success: false,
-      error: error.message,
+      error: errorMessage,
     };
   }
 };
