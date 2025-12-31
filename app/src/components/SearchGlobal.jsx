@@ -3,6 +3,7 @@ import { Search, X } from "lucide-react";
 import { db } from "../core/db/db";
 import { useLiveQuery } from "dexie-react-hooks";
 import { Command } from "lucide-react";
+import { getPrimaryFavicon, getGoogleFavicon } from "../utils/favicontjs";
 
 export default function SearchGlobal({ setSearchOpen }) {
   const inputRef = useRef(null);
@@ -90,23 +91,6 @@ export default function SearchGlobal({ setSearchOpen }) {
     setSearchQuery("");
   };
 
-  const getFaviconUrl = (url) => {
-    try {
-      // Normalize URL - add https:// if missing
-      let normalizedUrl = url;
-      if (!url.startsWith("http://") && !url.startsWith("https://")) {
-        normalizedUrl = `https://${url}`;
-      }
-      const domain = new URL(normalizedUrl).hostname;
-      return `https://www.google.com/s2/favicons?domain=${domain}&sz=32`;
-    } catch {
-      // Fallback: try to extract domain from string
-      const domainMatch = url.match(/(?:https?:\/\/)?(?:www\.)?([^\/]+)/);
-      const domain = domainMatch ? domainMatch[1] : url;
-      return `https://www.google.com/s2/favicons?domain=${domain}&sz=32`;
-    }
-  };
-
   return (
     <div
       className={`fixed inset-0 bg-black/60 backdrop-blur-sm flex flex-col items-center pt-16 sm:pt-28 z-50 transition-opacity duration-200 px-4 ${
@@ -180,12 +164,13 @@ export default function SearchGlobal({ setSearchOpen }) {
                   }`}
                 >
                   <img
-                    src={getFaviconUrl(link.url)}
+                    src={getPrimaryFavicon(link.url)}
+                    onError={(e) => {
+                      e.currentTarget.onerror = null;
+                      e.currentTarget.src = getGoogleFavicon(link.url);
+                    }}
                     className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0 rounded"
                     alt=""
-                    onError={(e) => {
-                      e.target.style.display = "none";
-                    }}
                   />
                   <div className="flex-1 min-w-0">
                     <div className="font-medium text-xs sm:text-sm truncate">
