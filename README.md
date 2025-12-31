@@ -1,6 +1,7 @@
 # Zandar 
 
-***A local-first, privacy-focused & highly customizable browser startpage***
+**A local-first, privacy-focused & highly customizable browser startpage**.
+An open-source alternative to StartMe.
 
 ![Zandar preview](images/preview.png)
 *(New tab view showing the dashboard)*
