@@ -12,6 +12,7 @@ import { v4 as uuidv4 } from "uuid";
 import { db } from "../core/db/db";
 import { SettingsContext } from "../contexts/SettingsProvider.jsx";
 import LinkPreview from "./LinkPreview.jsx";
+import { getPrimaryFavicon, getGoogleFavicon } from "../utils/favicon.ts";
 
 const Widget = ({ widget, widgets, setWidgets }) => {
   const [showAddLink, setShowAddLink] = useState(false);
@@ -564,10 +565,13 @@ const Widget = ({ widget, widgets, setWidgets }) => {
                       {/* Add this as a toggle in Settings */}
                       {/* <div className="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center">*/}
                       <img
-                        src={`https://www.google.com/s2/favicons?domain=${l.url}&sz=32`}
+                        src={getPrimaryFavicon(l.url)}
+                        onError={(e) => {
+                          e.currentTarget.onerror = null;
+                          e.currentTarget.src = getGoogleFavicon(l.url);
+                        }}
                         className="w-4 h-4 flex-shrink-0 rounded"
                         alt=""
-                        onError={(e) => (e.target.style.display = "none")}
                       />
                       {/* </div>*/}
                       <a
@@ -671,7 +675,6 @@ const Widget = ({ widget, widgets, setWidgets }) => {
 
                 <LinkPreview
                   title={newLink.name}
-                  iconUrl={`https://www.google.com/s2/favicons?domain=${newLink.url}&sz=32`}
                   url={newLink.url}
                   isVisible={fetchedTitle}
                   onClick={() => addLink(widget.id)}
