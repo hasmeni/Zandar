@@ -16,20 +16,20 @@ import SettingsPanel from "./SettingsPanel/SettingsPanel";
 import { SettingsContext } from "../contexts/SettingsProvider";
 import SearchGlobal from "./SearchGlobal.jsx";
 import { CommandIcon } from "@phosphor-icons/react";
+import PageDeleteConfirm from "./PageDeleteConfirm";
 
 export default function NavBar({ activeTab, setActiveTab }) {
   const dbPages = useLiveQuery(() => db.pages.toArray(), []);
   const [pages, setPages] = useState([]);
   const [draggedPage, setDraggedPage] = useState(null);
   const [dragOverIndex, setDragOverIndex] = useState(null);
-
+  
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [newPageDialog, setNewPageDialog] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState(null);
   const [newPage, setNewPage] = useState({ title: "" });
   const [editingPageTitleById, setEditingPageTitleById] = useState(null);
-  // const [settingsOpen, setSettingsOpen] = useState(false);
 
   const { widgetOpacity, settingsOpen, setSettingsOpen } =
     useContext(SettingsContext);
@@ -242,10 +242,10 @@ export default function NavBar({ activeTab, setActiveTab }) {
                             viewBox="0 0 24 24"
                             fill="none"
                             stroke="currentColor"
-                            stroke-width="2"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            class="lucide lucide-layers-icon lucide-layers"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            className="lucide lucide-layers-icon lucide-layers"
                           >
                             <path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z" />
                             <path d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12" />
@@ -277,7 +277,7 @@ export default function NavBar({ activeTab, setActiveTab }) {
                           draggedPage?.index !== index;
 
                         return (
-                          <button
+                          <div
                             key={page.id}
                             draggable
                             onDragStart={(e) => handleDragStart(e, page, index)}
@@ -381,7 +381,7 @@ export default function NavBar({ activeTab, setActiveTab }) {
                                 </button>
                               </div>
                             )}
-                          </button>
+                          </div>
                         );
                       })}
                     </div>
@@ -427,7 +427,9 @@ export default function NavBar({ activeTab, setActiveTab }) {
                       ${isDropTarget && activeTab == page.uuid ? "border border-black scale-95" : ""}
                     `}
                   >
-                    <span className="w-full truncate max-w-[120px] sm:max-w-none">{page.title}</span>
+                    <span className="w-full truncate max-w-[120px] sm:max-w-none">
+                      {page.title}
+                    </span>
                   </button>
                 );
               })}
@@ -438,7 +440,6 @@ export default function NavBar({ activeTab, setActiveTab }) {
               {/* Add Page Button */}
               <button
                 onClick={() => setNewPageDialog(true)}
-                onMouseDown={() => setIsMouseDown(true)}
                 className={`
                   text-white
                   rounded-full p-2
@@ -460,7 +461,9 @@ export default function NavBar({ activeTab, setActiveTab }) {
 
           {/* Right side - Icons */}
           <div className="flex items-center gap-2 sm:gap-4 px-1 flex-shrink-0">
-            <h2 className="hidden sm:block text-xs sm:text-sm select-none">[ Beta ]</h2>
+            <h2 className="hidden sm:block text-xs sm:text-sm select-none">
+              [ Beta ]
+            </h2>
 
             <div className="flex items-center gap-1 sm:gap-2">
               {/* <button
@@ -563,43 +566,11 @@ export default function NavBar({ activeTab, setActiveTab }) {
 
       {/* Delete Confirmation Modal */}
       {deleteConfirm && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4"
-          onClick={() => setDeleteConfirm(null)}
-        >
-          <div
-            className="bg-[#1a1a1a] border border-gray-700 rounded-lg shadow-2xl w-full max-w-sm p-4 sm:p-6"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="mb-4">
-              <h3 className="text-xl font-bold text-white mb-2">
-                Delete Page?
-              </h3>
-              <p className="text-gray-400 text-sm">
-                Delete "
-                <span className="font-semibold text-white">
-                  {deleteConfirm.title}
-                </span>
-                "? All widgets and links will be deleted.
-              </p>
-            </div>
-
-            <div className="flex gap-3 justify-end">
-              <button
-                onClick={() => setDeleteConfirm(null)}
-                className="px-4 py-2 border border-gray-700 rounded-lg text-gray-300 hover:bg-gray-800 transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={() => handleDeletePage(deleteConfirm)}
-                className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors font-medium"
-              >
-                Delete
-              </button>
-            </div>
-          </div>
-        </div>
+        <PageDeleteConfirm
+          deleteConfirm={deleteConfirm}
+          setDeleteConfirm={setDeleteConfirm}
+          handleDeletePage={handleDeletePage}
+        />
       )}
     </>
   );
