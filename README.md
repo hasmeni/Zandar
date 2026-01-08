@@ -10,7 +10,7 @@ An open-source alternative to StartMe.
 ![Settings Preview](images/two.png)
 *(Settings Preview)*
 
-It works offline, stores everything locally, and doesn’t require login. You can use it as a new tab, homepage, or a simple bookmark manager. Still early, but usable.
+
 
 ---
 
@@ -30,13 +30,20 @@ It works offline, stores everything locally, and doesn’t require login. You ca
 ---
 
 ## Self-Hosting / Development Setup - Docker
-easily deploy with docker compose up -d --build 
-or
-**build image:**
-docker build -t zandar-app .
-**Run the Container:**
-docker run -p 3001:3001 zandar-app
+Using Docker (Recommended)
+Build the Image
 
+docker build -t zandar-app .
+Run the Container
+
+docker run -p 3001:3001 zandar-app
+Using Docker Compose
+Start the Service
+
+docker compose up -d --build
+This works identically to the manual docker run command, mapping port 3001.
+
+Access the App Open http://localhost:3001.
 ---
 
 ## Self-Hosting / Development Setup - Node
