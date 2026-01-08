@@ -3,6 +3,7 @@ import fetch from "node-fetch";
 import cors from "cors";
 import * as cheerio from "cheerio";
 import dotenv from "dotenv";
+import path from "path";
 
 const app = express();
 app.use(cors());
@@ -11,6 +12,11 @@ app.use(express.json());
 dotenv.config();
 
 const PORT = process.env.PORT || 3001;
+const __dirname = path.resolve();
+
+// Serve static files from the frontend build
+app.use(express.static(path.join(__dirname, "../app/dist")));
+
 
 function isYouTube(url) {
   return url.includes("youtube.com") || url.includes("youtu.be");
@@ -38,7 +44,7 @@ app.post("/api/preview", async (req, res) => {
 
       return res.json({
         title: `${data.author_name} | Twitter`,
-        html: data.html,  
+        html: data.html,
         type: "twitter",
       });
     }
@@ -101,6 +107,11 @@ app.post("/api/preview", async (req, res) => {
     console.error("Preview fetch failed:", err);
     res.json({ title: "Untitled" });
   }
+});
+
+// Handle client-side routing by returning index.html for all non-API routes
+app.get(/.*/, (req, res) => {
+  res.sendFile(path.join(__dirname, "../app/dist", "index.html"));
 });
 
 app.listen(PORT, () => {
