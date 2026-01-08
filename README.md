@@ -29,44 +29,35 @@ It works offline, stores everything locally, and doesn’t require login. You ca
 
 ---
 
-## Working on:
-
-- Browser extension support (new tab override + Quick save)
-- More widget types
-- Code cleanup and refactor
-
----
-
-## Project Status
-
-This project works as intended, but the **codebase is messy**.
-
-I’m actively using it, but a proper refactor is in progress. Some parts evolved quickly during experimentation and haven’t been cleaned up yet.
-
-If you’re browsing the code and things look rough, that’s fair. Cleanup is ongoing.
-
-*Also This is my first time managing an open-source project, so suggestions and improvements are very welcome.*
+## Self-Hosting / Development Setup - Docker
+easily deploy with docker compose up -d --build 
+or
+**build image:**
+docker build -t zandar-app .
+**Run the Container:**
+docker run -p 3001:3001 zandar-app
 
 ---
 
-## Self-Hosting / Development Setup
+## Self-Hosting / Development Setup - Node
+Using Node.js Directly
+If you prefer to run it without Docker (requires Node.js v20+):
 
-Self-hosting and setup documentation is **not ready yet**.
+Install Dependencies
 
-Once the code cleanup stabilizes, I’ll add:
-- Clear dev setup instructions
-- Self-hosting notes
-- Build and deployment details
+npm run install-all
+Build Frontend
 
-For now, consider this repo **early but open**.
+npm run build
+Start Backend
+
+npm run start
+The app will be available at http://localhost:3001.
+
 
 ---
 
-## Feedback
 
-This project is shared early to get feedback and real usage insights.
 
-If you self-host dashboards or use startpages regularly, I’d especially appreciate thoughts on:
-- Missing basics
-- UX friction
-- What you actually use daily vs ignore
+
+
