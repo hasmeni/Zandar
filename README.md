@@ -10,23 +10,6 @@ An open-source alternative to StartMe.
 ![Settings Preview](images/two.png)
 *(Settings Preview)*
 
-
-
----
-
-## Features (current MVP):
-
-- Local-first storage (IndexedDB + browser localstorage)
-- No login or account required
-- Fast local search across saved links
-- Auto-fetch page titles and favicons
-- Import / export (JSON backup)
-- Drag & drop layout for links and widgets
-- Multi-column grid control
-- Background presets (image)
-- Support for local background images and Videos
-- Dark-only, calm UI
-
 ---
 
 ## Self-Hosting / Development Setup - Docker
