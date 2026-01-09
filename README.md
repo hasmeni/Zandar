@@ -43,4 +43,5 @@ Start Backend
 
 npm run start
 The app will be available at http://localhost:3001.
-
+---
+Your content lives entirely in your browser session. Please export your data if you intend to use it from different browsers
